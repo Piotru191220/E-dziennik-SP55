@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SP55 - E-Dziennik</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f2f5fa;color:#23344d}
+header{background:#142b4a;color:white;padding:22px;text-align:center}
+header h1{margin:0;font-size:24px}
+header p{margin:7px 0 0;color:#d4e2f3}
+main{max-width:950px;margin:35px auto;padding:20px}
+.card{background:white;border-radius:14px;padding:25px;margin-bottom:20px;box-shadow:0 3px 12px #0000000b}
+h2{margin-top:0;color:#173b68}
+input{width:100%;padding:13px;margin:8px 0;border:1px solid #ccd6e2;border-radius:8px}
+button{background:#2864ad;color:white;border:0;padding:12px 20px;border-radius:8px;cursor:pointer;font-weight:bold}
+button:hover{background:#174b89}
+.menu{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.menu button{background:#e3edf9;color:#1c4d83}
+.menu button:hover{background:#cbdcf1}
+.hidden{display:none}
+table{width:100%;border-collapse:collapse}
+td,th{padding:12px;border-bottom:1px solid #e5eaf0;text-align:left}
+th{background:#edf3fa}
+</style>
+</head>
+<body>
+<header>
+<h1>SP55 | E-DZIENNIK</h1>
+<p>Szkoła Podstawowa nr 55 im. Marii Skłodowskiej</p>
+</header>
+<main>
+<div class="card" id="login">
+<h2>Logowanie do e-dziennika</h2>
+<label>Login</label>
+<input id="user" placeholder="Wpisz login">
+<label>Hasło</label>
+<input id="pass" type="password" placeholder="Wpisz hasło">
+<button onclick="zaloguj()">Zaloguj się</button>
+<p id="blad"></p>
+<p><small>Wersja demonstracyjna. Login: dyrektor | Hasło: SP55demo</small></p>
+</div>
+
+<div id="panel" class="hidden">
+<div class="card">
+<h2>Panel dyrektora</h2>
+<p>Witamy w e-dzienniku Szkoły Podstawowej nr 55!</p>
+<div class="menu">
+<button onclick="pokaz('start')">Pulpit</button>
+<button onclick="pokaz('uczniowie')">Uczniowie</button>
+<button onclick="pokaz('oceny')">Oceny</button>
+<button onclick="pokaz('frekwencja')">Frekwencja</button>
+<button onclick="pokaz('lekcje')">Tematy lekcji</button>
+</div>
+</div>
+
+<div class="card" id="start">
+<h2>Strona główna</h2>
+<p>Wybierz odpowiednią zakładkę z menu.</p>
+<p>🏫 Szkoła: SP55</p>
+<p>📚 System: E-Dziennik</p>
+</div>
+
+<div class="card hidden" id="uczniowie">
+<h2>Uczniowie</h2>
+<table>
+<tr><th>Imię i nazwisko</th><th>Klasa</th></tr>
+<tr><td>Jan Kowalski</td><td>4A</td></tr>
+<tr><td>Anna Nowak</td><td>4A</td></tr>
+<tr><td>Ola Wiśniewska</td><td>5A</td></tr>
+</table>
+</div>
+
+<div class="card hidden" id="oceny">
+<h2>Oceny</h2>
+<table>
+<tr><th>Uczeń</th><th>Przedmiot</th><th>Ocena</th></tr>
+<tr><td>Jan Kowalski</td><td>Matematyka</td><td>5</td></tr>
+<tr><td>Anna Nowak</td><td>Język polski</td><td>4</td></tr>
+</table>
+</div>
+
+<div class="card hidden" id="frekwencja">
+<h2>Frekwencja</h2>
+<p>Jan Kowalski – obecny</p>
+<p>Anna Nowak – nieobecna</p>
+</div>
+
+<div class="card hidden" id="lekcje">
+<h2>Tematy lekcji</h2>
+<p>Matematyka – Dodawanie ułamków.</p>
+<p>Język polski – Opis postaci.</p>
+</div>
+
+<button onclick="wyloguj()">Wyloguj się</button>
+</div>
+</main>
+<script>
+function zaloguj(){
+let u=document.getElementById("user").value;
+let p=document.getElementById("pass").value;
+if(u==="dyrektor"&&p==="SP55demo"){
+document.getElementById("login").classList.add("hidden");
+document.getElementById("panel").classList.remove("hidden");
+}else{
+document.getElementById("blad").textContent="Nieprawidłowy login lub hasło.";
+}
+}
+function pokaz(id){
+["start","uczniowie","oceny","frekwencja","lekcje"].forEach(x=>{
+document.getElementById(x).classList.add("hidden");
+});
+document.getElementById(id).classList.remove("hidden");
+}
+function wyloguj(){
+document.getElementById("panel").classList.add("hidden");
+document.getElementById("login").classList.remove("hidden");
+}
+</script>
+</body>
+</html>
