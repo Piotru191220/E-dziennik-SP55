@@ -547,6 +547,17 @@ if(!mojeKlasy().includes(klasa))return alert("Ta klasa nie jest Ci przypisana.")
 sprawdziany.push({klasa,temat,data,rodzaj:document.getElementById("testRodzaj").value,przedmiot:document.getElementById("testPrzedmiot").value});
 odswiez();document.getElementById("testTemat").value="";
 }
+    function usunSprawdzian(i){
+    if(rola!=="dyrektor")return;
+
+    if(!confirm("Czy na pewno chcesz usunąć ten sprawdzian lub kartkówkę?"))return;
+
+    sprawdziany.splice(i,1);
+    zapisz();
+    odswiez();
+
+    alert("Sprawdzian lub kartkówka zostały usunięte.");
+}
 
 /* ZASTĘPSTWA */
 function dodajZastepstwo(){
