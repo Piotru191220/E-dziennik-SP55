@@ -81,6 +81,7 @@ main{margin:0;padding:12px}
 <button onclick="pokaz('uwagi')">📌 Uwagi</button>
 <button onclick="pokaz('zadania')">📚 Zadania domowe</button>
 <button id="menuNauczyciele" onclick="pokaz('nauczyciele')">👩‍🏫 Nauczyciele</button>
+    <button id="menuKonta" onclick="pokaz('konta')">👤 Konta użytkowników</button>
 <button onclick="pokaz('zastepstwa')">🔄 Zastępstwa</button>
 <button id="menuUsprawiedliwienia" onclick="pokaz('usprawiedliwienia')">📄 Usprawiedliwienia</button>
 <button onclick="pokaz('prywatne')">✉️ Prywatne wiadomości</button>
@@ -274,7 +275,33 @@ main{margin:0;padding:12px}
 </div>
 </section>
 
-<section id="zastepstwa" class="section">
+<section id="konta" class="section">
+<div class="panel">
+<h2>👤 Zarządzanie kontami</h2>
+<p>Tworzenie kont nauczycieli, uczniów i rodziców.</p>
+
+<label>Imię i nazwisko</label>
+<input id="kontoImie" placeholder="Np. Anna Nowak">
+
+<label>Login</label>
+<input id="kontoLogin" placeholder="Np. anna.nowak">
+
+<label>Hasło</label>
+<input id="kontoHaslo" type="password" placeholder="Minimum 8 znaków">
+
+<label>Rodzaj konta</label>
+<select id="kontoRola">
+<option value="teacher">Nauczyciel</option>
+<option value="student">Uczeń</option>
+<option value="parent">Rodzic</option>
+</select>
+
+<button onclick="utworzKonto()">Utwórz konto</button>
+
+<p id="kontoKomunikat"></p>
+</div>
+</section>
+    <section id="zastepstwa" class="section">
 <div class="panel">
 <h2>🔄 Zastępstwa</h2>
 <div id="formularzZastepstwa">
@@ -548,6 +575,7 @@ let widoczne={
 menuUczniowie:rola==="dyrektor",
 menuTematy:["dyrektor","nauczyciel"].includes(rola),
 menuNauczyciele:rola==="dyrektor",
+    menuKonta:rola==="dyrektor",
 menuUsprawiedliwienia:["dyrektor","rodzic"].includes(rola)
 };
     document.getElementById("formularzUwagi").style.display=
@@ -569,7 +597,59 @@ document.getElementById("formularzPrywatnej").style.display=["rodzic","nauczycie
 document.getElementById("statystyki").style.display=rola==="dyrektor"?"grid":"none";
 document.getElementById("naglowekPlanu").textContent=rola==="nauczyciel"?"Twój plan lekcji":"Wyświetl plan klasy";
 }
-function wyloguj(){
+async function utworzKonto(){
+  if(rola!=="dyrektor")return;
+
+  const imie=document.getElementById("kontoImie").value.trim();
+  const login=document.getElementById("kontoLogin").value.trim().toLowerCase();
+  const haslo=document.getElementById("kontoHaslo").value;
+  const kontoRola=document.getElementById("kontoRola").value;
+  const komunikat=document.getElementById("kontoKomunikat");
+
+  komunikat.style.color="red";
+
+  if(!imie||!login||!haslo){
+    komunikat.textContent="Uzupełnij wszystkie pola.";
+    return;
+  }
+
+  if(!/^[a-zA-Z0-9_-]{3,30}$/.test(login)){
+    komunikat.textContent="Login musi mieć 3–30 znaków: litery, cyfry, _ lub -.";
+    return;
+  }
+
+  if(haslo.length<8){
+    komunikat.textContent="Hasło musi mieć minimum 8 znaków.";
+    return;
+  }
+
+  komunikat.textContent="Tworzenie konta...";
+
+  const {data,error}=await supabaseClient.functions.invoke(
+    "create-account",
+    {
+      body:{
+        username:login,
+        display_name:imie,
+        password:haslo,
+        role:kontoRola
+      }
+    }
+  );
+
+  if(error||data?.error){
+    komunikat.textContent=data?.error||error.message;
+    return;
+  }
+
+  komunikat.style.color="green";
+  komunikat.textContent="Konto zostało utworzone!";
+
+  document.getElementById("kontoImie").value="";
+  document.getElementById("kontoLogin").value="";
+  document.getElementById("kontoHaslo").value="";
+}
+    function wyloguj(){
 aktualnyUzytkownik=null;rola="";
 document.getElementById("layout").style.display="none";
 document.getElementById("login").style.display="block";
