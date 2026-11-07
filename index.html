@@ -548,7 +548,7 @@ sprawdziany.push({klasa,temat,data,rodzaj:document.getElementById("testRodzaj").
 odswiez();document.getElementById("testTemat").value="";
 }
     function usunSprawdzian(i){
-    if(rola!=="dyrektor")return;
+    if(!["dyrektor","nauczyciel"].includes(rola))return;
 
     if(!confirm("Czy na pewno chcesz usunąć ten sprawdzian lub kartkówkę?"))return;
 
