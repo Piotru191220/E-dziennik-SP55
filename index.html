@@ -346,8 +346,8 @@ main{margin:0;padding:12px}
 </div>
 
 <h3>Lista uwag</h3>
-<table>
-<thead><tr><th>Uczeń</th><th>Klasa</th><th>Treść</th><th>Autor</th><th>Data</th></tr></thead>
+<table><thead><tr><th>Uczeń</th><th>Klasa</th><th>Treść</th><th>Autor</th><th>Data</th><th>Akcja</th></tr>
+</thead>
 <tbody id="listaUwag"></tbody>
 </table>
 </div>
@@ -381,7 +381,7 @@ main{margin:0;padding:12px}
 
 <h3>Lista zadań domowych</h3>
 <table>
-<thead><tr><th>Klasa</th><th>Przedmiot</th><th>Zadanie</th><th>Termin</th><th>Autor</th></tr></thead>
+<thead><tr><th>Klasa</th><th>Przedmiot</th><th>Zadanie</th><th>Termin</th><th>Autor</th><th>Akcja</th></tr></thead>
 <tbody id="listaZadan"></tbody>
 </table>
 </div>
@@ -624,7 +624,34 @@ odswiez();document.getElementById("testTemat").value="";
 
     alert("Sprawdzian lub kartkówka zostały usunięte.");
 }
-/* UWAGI */
+function usunUwage(i){
+if(!["dyrektor","nauczyciel"].includes(rola))return;
+if(!uwagi[i])return;
+
+if(rola==="nauczyciel"&&!mojeKlasy().includes(uwagi[i].klasa))
+return alert("Nie możesz usunąć tej uwagi.");
+
+if(!confirm("Czy na pewno usunąć tę uwagę?"))return;
+
+uwagi.splice(i,1);
+zapisz();
+odswiez();
+}
+
+function usunZadanie(i){
+if(!["dyrektor","nauczyciel"].includes(rola))return;
+if(!zadania[i])return;
+
+if(rola==="nauczyciel"&&!mojeKlasy().includes(zadania[i].klasa))
+return alert("Nie możesz usunąć tego zadania.");
+
+if(!confirm("Czy na pewno usunąć to zadanie domowe?"))return;
+
+zadania.splice(i,1);
+zapisz();
+odswiez();
+}
+    /* UWAGI */
 function dodajUwage(){
 if(!["dyrektor","nauczyciel"].includes(rola))return;
 
@@ -825,7 +852,23 @@ bezpieczny(u.imie)+" ("+bezpieczny(u.klasa)+")</option>"
 
 document.getElementById("uwagaUczen").innerHTML=uwagaOpcje;
 
+let widoczneUwagi=uwagi.map((u,i)=>({u,i})).filter(({u})=>
+rola==="dyrektor"||
+(rola==="nauczyciel"&&mojeKlasy().includes(u.klasa))||
+u.uczen===aktualnyUzytkownik?.uczen
+);
+
 document.getElementById("listaUwag").innerHTML=
+widoczneUwagi.map(({u,i})=>
+"<tr><td>"+bezpieczny(u.uczen)+
+"</td><td>"+bezpieczny(u.klasa)+
+"</td><td>"+bezpieczny(u.tresc)+
+"</td><td>"+bezpieczny(u.autor)+
+"</td><td>"+bezpieczny(u.data)+
+"</td><td>"+(["dyrektor","nauczyciel"].includes(rola)?
+"<button class='danger' onclick='usunUwage("+i+")'>Usuń</button>":"—")+
+"</td></tr>"
+).join("")||"<tr><td colspan='6'>Brak uwag.</td></tr>";
 uwagi.filter(u=>
 rola==="dyrektor"||
 (rola==="nauczyciel"&&mojeKlasy().includes(u.klasa))||
@@ -856,6 +899,17 @@ rola==="dyrektor"||
 );
 
 document.getElementById("listaZadan").innerHTML=
+widoczneZadania.map(z=>{
+let i=zadania.indexOf(z);
+return "<tr><td>"+bezpieczny(z.klasa)+
+"</td><td>"+bezpieczny(z.przedmiot)+
+"</td><td>"+bezpieczny(z.tresc)+
+"</td><td>"+bezpieczny(z.termin)+
+"</td><td>"+bezpieczny(z.autor)+
+"</td><td>"+(["dyrektor","nauczyciel"].includes(rola)?
+"<button class='danger' onclick='usunZadanie("+i+")'>Usuń</button>":"—")+
+"</td></tr>";
+}).join("")||"<tr><td colspan='6'>Brak zadań domowych.</td></tr>";
 widoczneZadania.sort((a,b)=>a.termin.localeCompare(b.termin)).map(z=>
 "<tr><td>"+bezpieczny(z.klasa)+
 "</td><td>"+bezpieczny(z.przedmiot)+
