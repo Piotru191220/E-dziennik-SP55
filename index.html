@@ -11,15 +11,15 @@ body{margin:0;font-family:Arial;background:#f1f4f9;color:#26364b}
 header{background:#17365d;color:white;padding:22px 30px}
 header h1{margin:0}
 header p{margin:7px 0 0;color:#d8e5f4}
-.login{max-width:410px;margin:65px auto;background:white;padding:30px;border-radius:14px;box-shadow:0 5px 25px #0001}
+.login{max-width:410px;margin:45px auto;background:white;padding:30px;border-radius:14px;box-shadow:0 5px 25px #0001}
 input,select,textarea{width:100%;padding:11px;margin:7px 0 14px;border:1px solid #ccd5e0;border-radius:7px;font-family:Arial}
 button{padding:11px 15px;border:0;border-radius:7px;background:#205b94;color:white;cursor:pointer;margin:3px}
 button:hover{background:#164574}
 .layout{display:none}
-nav{background:white;width:225px;float:left;min-height:90vh;padding:18px}
+nav{background:white;width:230px;float:left;min-height:90vh;padding:15px}
 nav button{display:block;width:100%;text-align:left;margin:5px 0;background:#edf2f8;color:#243b55}
 nav button:hover{background:#dce9f7}
-main{margin-left:225px;padding:25px}
+main{margin-left:230px;padding:22px}
 .panel{background:white;padding:22px;border-radius:12px;margin-bottom:18px;box-shadow:0 2px 10px #00000009}
 .section{display:none}
 .section.active{display:block}
@@ -31,13 +31,17 @@ th,td{padding:11px;border-bottom:1px solid #e3e8ef;text-align:left}
 th{background:#f1f5fa}
 .small{font-size:13px;color:#718096}
 .danger{background:#a83232}
-textarea{min-height:100px;resize:vertical}
+.good{background:#27804b}
+textarea{min-height:90px;resize:vertical}
 .announcement{border-left:4px solid #205b94;padding:15px;background:#f6f9fd;border-radius:8px;margin:15px 0}
 .hidden{display:none!important}
-@media(max-width:650px){
+.message{padding:13px;margin:10px 0;background:#f3f6fa;border-radius:8px;border-left:4px solid #205b94}
+.status{font-weight:bold}
+@media(max-width:700px){
 nav{float:none;width:100%;min-height:auto;display:flex;flex-wrap:wrap}
 nav button{width:auto;flex:1}
 main{margin:0;padding:12px}
+.panel{padding:14px;overflow-x:auto}
 }
 </style>
 </head>
@@ -50,7 +54,7 @@ main{margin:0;padding:12px}
 
 <div id="login" class="login">
 <h2>Logowanie do systemu</h2>
-<p class="small">Zaloguj się na swoje konto demonstracyjne.</p>
+<p class="small">Zaloguj się na konto demonstracyjne.</p>
 <label>Login</label>
 <input id="loginName" placeholder="Login">
 <label>Hasło</label>
@@ -68,13 +72,16 @@ main{margin:0;padding:12px}
 <nav>
 <button onclick="pokaz('pulpit')">🏠 Pulpit</button>
 <button id="menuUczniowie" onclick="pokaz('uczniowie')">👨‍🎓 Uczniowie</button>
-<button id="menuOceny" onclick="pokaz('oceny')">📝 Oceny</button>
-<button id="menuFrekwencja" onclick="pokaz('frekwencja')">📅 Frekwencja</button>
+<button onclick="pokaz('oceny')">📝 Oceny</button>
+<button onclick="pokaz('frekwencja')">📅 Frekwencja</button>
 <button id="menuTematy" onclick="pokaz('tematy')">📚 Tematy lekcji</button>
-<button onclick="pokaz('ogloszenia')">📢 Wiadomości</button>
+<button onclick="pokaz('ogloszenia')">📢 Wiadomości szkolne</button>
 <button onclick="pokaz('plan')">🗓️ Plan lekcji</button>
-<button id="menuSprawdziany" onclick="pokaz('sprawdziany')">📝 Sprawdziany</button>
+<button onclick="pokaz('sprawdziany')">📝 Sprawdziany</button>
 <button id="menuNauczyciele" onclick="pokaz('nauczyciele')">👩‍🏫 Nauczyciele</button>
+<button onclick="pokaz('zastepstwa')">🔄 Zastępstwa</button>
+<button id="menuUsprawiedliwienia" onclick="pokaz('usprawiedliwienia')">📄 Usprawiedliwienia</button>
+<button onclick="pokaz('prywatne')">✉️ Prywatne wiadomości</button>
 <button onclick="wyloguj()" class="danger">Wyloguj</button>
 </nav>
 
@@ -92,8 +99,12 @@ main{margin:0;padding:12px}
 <div class="stat">Lekcje w planie<strong id="liczbaLekcji">0</strong></div>
 </div>
 <div class="panel">
-<h3>Ostatnie wiadomości</h3>
+<h3>Ostatnie wiadomości szkolne</h3>
 <div id="wiadomosciPulpit"></div>
+</div>
+<div class="panel">
+<h3>Najbliższe zastępstwa</h3>
+<div id="zastepstwaPulpit"></div>
 </div>
 </section>
 
@@ -104,17 +115,15 @@ main{margin:0;padding:12px}
 <h3>Dodaj ucznia</h3>
 <input id="nowyUczen" placeholder="Imię i nazwisko">
 <select id="klasa">
-<option>1A</option><option>1B</option><option>2A</option>
-<option>2B</option><option>3A</option><option>4A</option>
-<option>5A</option><option>6A</option><option>7A</option><option>8A</option>
+<option>1A</option><option>1B</option><option>2A</option><option>2B</option>
+<option>3A</option><option>4A</option><option>5A</option><option>6A</option>
+<option>7A</option><option>8A</option>
 </select>
 <button onclick="dodajUcznia()">Dodaj ucznia</button>
 </div>
 <h3>Lista uczniów</h3>
-<table>
-<thead><tr><th>Uczeń</th><th>Klasa</th><th>Akcja</th></tr></thead>
-<tbody id="listaUczniow"></tbody>
-</table>
+<table><thead><tr><th>Uczeń</th><th>Klasa</th><th>Akcja</th></tr></thead>
+<tbody id="listaUczniow"></tbody></table>
 </div>
 </section>
 
@@ -137,10 +146,8 @@ main{margin:0;padding:12px}
 </select>
 <button onclick="dodajOcene()">Zapisz ocenę</button>
 </div>
-<table>
-<thead><tr><th>Uczeń</th><th>Przedmiot</th><th>Ocena</th></tr></thead>
-<tbody id="listaOcen"></tbody>
-</table>
+<table><thead><tr><th>Uczeń</th><th>Przedmiot</th><th>Ocena</th></tr></thead>
+<tbody id="listaOcen"></tbody></table>
 </div>
 </section>
 
@@ -150,15 +157,11 @@ main{margin:0;padding:12px}
 <div id="formularzFrekwencji">
 <label>Uczeń</label><select id="uczenFrekwencja"></select>
 <label>Status</label>
-<select id="status">
-<option>Obecny</option><option>Nieobecny</option><option>Spóźniony</option>
-</select>
+<select id="status"><option>Obecny</option><option>Nieobecny</option><option>Spóźniony</option></select>
 <button onclick="dodajFrekwencje()">Zapisz obecność</button>
 </div>
-<table>
-<thead><tr><th>Uczeń</th><th>Status</th><th>Data</th></tr></thead>
-<tbody id="listaFrekwencji"></tbody>
-</table>
+<table><thead><tr><th>Uczeń</th><th>Status</th><th>Data</th></tr></thead>
+<tbody id="listaFrekwencji"></tbody></table>
 </div>
 </section>
 
@@ -176,25 +179,19 @@ main{margin:0;padding:12px}
 <label>Temat</label><input id="nowyTemat" placeholder="Temat lekcji">
 <button onclick="dodajTemat()">Zapisz temat</button>
 </div>
-<table>
-<thead><tr><th>Przedmiot</th><th>Klasa</th><th>Temat</th><th>Data</th></tr></thead>
-<tbody id="listaTematow"></tbody>
-</table>
+<table><thead><tr><th>Przedmiot</th><th>Klasa</th><th>Temat</th><th>Data</th></tr></thead>
+<tbody id="listaTematow"></tbody></table>
 </div>
 </section>
 
 <section id="ogloszenia" class="section">
 <div class="panel">
-<h2>📢 Wiadomości i ogłoszenia</h2>
+<h2>📢 Wiadomości i ogłoszenia szkolne</h2>
 <div id="formularzOgloszenia">
-<h3>Wyślij wiadomość do społeczności szkolnej</h3>
-<label>Tytuł</label>
-<input id="tytulOgloszenia" placeholder="Np. Zebranie z rodzicami">
-<label>Treść</label>
-<textarea id="trescOgloszenia" placeholder="Wpisz treść wiadomości..."></textarea>
+<label>Tytuł</label><input id="tytulOgloszenia" placeholder="Tytuł wiadomości">
+<label>Treść</label><textarea id="trescOgloszenia" placeholder="Treść wiadomości"></textarea>
 <button onclick="dodajOgloszenie()">Opublikuj wiadomość</button>
 </div>
-<h3>Aktualne wiadomości</h3>
 <div id="listaOgloszen"></div>
 </div>
 </section>
@@ -207,8 +204,8 @@ main{margin:0;padding:12px}
 <label>Klasa</label><select id="planKlasa"></select>
 <label>Dzień tygodnia</label>
 <select id="planDzien">
-<option>Poniedziałek</option><option>Wtorek</option>
-<option>Środa</option><option>Czwartek</option><option>Piątek</option>
+<option>Poniedziałek</option><option>Wtorek</option><option>Środa</option>
+<option>Czwartek</option><option>Piątek</option>
 </select>
 <label>Godzina</label>
 <select id="planGodzina">
@@ -222,8 +219,7 @@ main{margin:0;padding:12px}
 <option>Język polski</option><option>Matematyka</option>
 <option>Język angielski</option><option>Przyroda</option>
 <option>Historia</option><option>Informatyka</option>
-<option>Plastyka</option><option>Muzyka</option>
-<option>Wychowanie fizyczne</option>
+<option>Plastyka</option><option>Muzyka</option><option>Wychowanie fizyczne</option>
 </select>
 <label>Nauczyciel</label><select id="planNauczyciel"></select>
 <label>Sala</label><input id="planSala" placeholder="Np. 12">
@@ -239,7 +235,6 @@ main{margin:0;padding:12px}
 <div class="panel">
 <h2>📝 Sprawdziany i kartkówki</h2>
 <div id="formularzSprawdzianu">
-<h3>Dodaj termin</h3>
 <label>Klasa</label><select id="testKlasa"></select>
 <label>Przedmiot</label>
 <select id="testPrzedmiot">
@@ -249,44 +244,92 @@ main{margin:0;padding:12px}
 </select>
 <label>Rodzaj</label>
 <select id="testRodzaj"><option>Sprawdzian</option><option>Kartkówka</option></select>
-<label>Temat / zakres materiału</label>
-<input id="testTemat" placeholder="Np. Działania pisemne">
+<label>Temat / zakres materiału</label><input id="testTemat" placeholder="Np. Działania pisemne">
 <label>Data</label><input id="testData" type="date">
 <button onclick="dodajSprawdzian()">Dodaj do terminarza</button>
 </div>
-<h3>Terminarz</h3>
-<table>
-<thead><tr><th>Data</th><th>Klasa</th><th>Rodzaj</th><th>Przedmiot</th><th>Zakres</th></tr></thead>
-<tbody id="listaSprawdzianow"></tbody>
-</table>
+<table><thead><tr><th>Data</th><th>Klasa</th><th>Rodzaj</th><th>Przedmiot</th><th>Zakres</th></tr></thead>
+<tbody id="listaSprawdzianow"></tbody></table>
 </div>
 </section>
 
 <section id="nauczyciele" class="section">
 <div class="panel">
 <h2>👩‍🏫 Konta nauczycieli</h2>
-<h3>Utwórz konto nauczyciela</h3>
-<label>Imię i nazwisko</label>
-<input id="nowyNauczyciel" placeholder="Imię i nazwisko">
-<label>Login</label>
-<input id="loginNauczyciela" placeholder="Np. anna.nowak">
-<label>Hasło demonstracyjne</label>
-<input id="hasloNauczyciela" placeholder="Utwórz hasło">
-<label>Przypisane klasy (możesz wybrać kilka)</label>
+<label>Imię i nazwisko</label><input id="nowyNauczyciel" placeholder="Imię i nazwisko">
+<label>Login</label><input id="loginNauczyciela" placeholder="Np. anna.nowak">
+<label>Hasło demonstracyjne</label><input id="hasloNauczyciela" placeholder="Utwórz hasło">
+<label>Przypisane klasy</label>
 <select id="klasyNauczyciela" multiple size="5">
-<option>1A</option><option>1B</option><option>2A</option>
-<option>2B</option><option>3A</option><option>4A</option>
-<option>5A</option><option>6A</option><option>7A</option><option>8A</option>
+<option>1A</option><option>1B</option><option>2A</option><option>2B</option>
+<option>3A</option><option>4A</option><option>5A</option><option>6A</option>
+<option>7A</option><option>8A</option>
 </select>
 <p class="small">Aby wybrać kilka klas, przytrzymaj Ctrl podczas klikania.</p>
 <button onclick="dodajNauczyciela()">Utwórz konto</button>
-<h3>Lista nauczycieli</h3>
-<table>
-<thead><tr><th>Nauczyciel</th><th>Login</th><th>Klasy</th><th>Akcja</th></tr></thead>
-<tbody id="listaNauczycieli"></tbody>
-</table>
+<table><thead><tr><th>Nauczyciel</th><th>Login</th><th>Klasy</th><th>Akcja</th></tr></thead>
+<tbody id="listaNauczycieli"></tbody></table>
 </div>
 </section>
+
+<section id="zastepstwa" class="section">
+<div class="panel">
+<h2>🔄 Zastępstwa</h2>
+<div id="formularzZastepstwa">
+<h3>Dodaj zastępstwo</h3>
+<label>Data</label><input type="date" id="zData">
+<label>Klasa</label><select id="zKlasa"></select>
+<label>Godzina lekcyjna</label>
+<select id="zGodzina">
+<option>8:00–8:45</option><option>8:55–9:40</option>
+<option>9:50–10:35</option><option>10:45–11:30</option>
+<option>11:50–12:35</option><option>12:45–13:30</option>
+<option>13:40–14:25</option><option>14:35–15:20</option>
+</select>
+<label>Przedmiot</label><input id="zPrzedmiot" placeholder="Np. Matematyka">
+<label>Nieobecny nauczyciel</label><input id="zNieobecny" placeholder="Imię i nazwisko">
+<label>Nauczyciel zastępujący</label><select id="zastepujacy"></select>
+<label>Sala</label><input id="zSala" placeholder="Numer sali">
+<button onclick="dodajZastepstwo()">Dodaj zastępstwo</button>
+</div>
+<h3>Lista zastępstw</h3>
+<table><thead><tr><th>Data</th><th>Klasa</th><th>Godzina</th><th>Przedmiot</th><th>Za kogo</th><th>Zastępca</th><th>Sala</th><th></th></tr></thead>
+<tbody id="listaZastepstw"></tbody></table>
+</div>
+</section>
+
+<section id="usprawiedliwienia" class="section">
+<div class="panel">
+<h2>📄 Usprawiedliwienia nieobecności</h2>
+<div id="formularzUsprawiedliwienia">
+<h3>Zgłoś usprawiedliwienie</h3>
+<label>Uczeń</label><select id="uspUczen"></select>
+<label>Data od</label><input type="date" id="uspOd">
+<label>Data do</label><input type="date" id="uspDo">
+<label>Powód</label><textarea id="uspPowod" placeholder="Wpisz powód nieobecności"></textarea>
+<button onclick="dodajUsprawiedliwienie()">Wyślij usprawiedliwienie</button>
+</div>
+<h3>Zgłoszenia</h3>
+<table><thead><tr><th>Uczeń</th><th>Od</th><th>Do</th><th>Powód</th><th>Status</th><th>Akcja</th></tr></thead>
+<tbody id="listaUsprawiedliwien"></tbody></table>
+</div>
+</section>
+
+<section id="prywatne" class="section">
+<div class="panel">
+<h2>✉️ Prywatne wiadomości</h2>
+<p class="small">Wiadomości demonstracyjne widoczne dla nadawcy i odbiorcy.</p>
+<div id="formularzPrywatnej">
+<label>Odbiorca</label><select id="odbiorcaPrywatnej"></select>
+<label>Treść wiadomości</label>
+<textarea id="trescPrywatnej" placeholder="Napisz wiadomość..."></textarea>
+<button onclick="wyslijPrywatna()">Wyślij wiadomość</button>
+</div>
+<h3>Twoja korespondencja</h3>
+<div id="listaPrywatnych"></div>
+</div>
+</section>
+
 </main>
 </div>
 
@@ -296,7 +339,6 @@ const klasy=["1A","1B","2A","2B","3A","4A","5A","6A","7A","8A"];
 function pobierz(k,w){
 try{let d=localStorage.getItem(k);return d?JSON.parse(d):w}catch(e){return w}
 }
-
 let uczniowie=pobierz("sp55_uczniowie",[
 {imie:"Jan Kowalski",klasa:"1A"},
 {imie:"Anna Nowak",klasa:"1A"},
@@ -315,21 +357,23 @@ let konta=pobierz("sp55_konta",[
 {login:"uczen1",haslo:"SP55demo",rola:"uczen",uczen:"Jan Kowalski",imie:"Jan Kowalski"},
 {login:"rodzic1",haslo:"SP55demo",rola:"rodzic",uczen:"Jan Kowalski",imie:"Rodzic Jana Kowalskiego"}
 ]);
-
+let zastepstwa=pobierz("sp55_zastepstwa",[]);
+let usprawiedliwienia=pobierz("sp55_usprawiedliwienia",[]);
+let prywatne=pobierz("sp55_prywatne",[]);
 let aktualnyUzytkownik=null;
 let rola="";
 
 function zapisz(){
-const dane={
+let dane={
 sp55_uczniowie:uczniowie,sp55_nauczyciele:nauczyciele,
 sp55_oceny:oceny,sp55_frekwencja:frekwencja,
-sp55_tematy:tematy,sp55_plan:plan,
-sp55_ogloszenia:ogloszenia,sp55_sprawdziany:sprawdziany,
-sp55_konta:konta
+sp55_tematy:tematy,sp55_plan:plan,sp55_ogloszenia:ogloszenia,
+sp55_sprawdziany:sprawdziany,sp55_konta:konta,
+sp55_zastepstwa:zastepstwa,sp55_usprawiedliwienia:usprawiedliwienia,
+sp55_prywatne:prywatne
 };
 Object.keys(dane).forEach(k=>localStorage.setItem(k,JSON.stringify(dane[k])));
 }
-
 function bezpieczny(t){
 return String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
@@ -348,10 +392,8 @@ function zaloguj(){
 let login=document.getElementById("loginName").value.trim();
 let haslo=document.getElementById("password").value;
 aktualnyUzytkownik=null;
-
 if(login==="dyrektor"&&haslo==="SP55demo"){
-aktualnyUzytkownik={imie:"Dyrektor"};
-rola="dyrektor";
+aktualnyUzytkownik={imie:"Dyrektor",login:"dyrektor"};rola="dyrektor";
 }else{
 let n=nauczyciele.find(x=>x.login===login&&x.haslo===haslo);
 let k=konta.find(x=>x.login===login&&x.haslo===haslo);
@@ -359,8 +401,7 @@ if(n){aktualnyUzytkownik=n;rola="nauczyciel";}
 else if(k){aktualnyUzytkownik=k;rola=k.rola;}
 }
 if(!aktualnyUzytkownik){
-document.getElementById("blad").textContent="Nieprawidłowy login lub hasło.";
-return;
+document.getElementById("blad").textContent="Nieprawidłowy login lub hasło.";return;
 }
 document.getElementById("blad").textContent="";
 document.getElementById("login").style.display="none";
@@ -368,23 +409,18 @@ document.getElementById("layout").style.display="block";
 document.getElementById("powitanie").textContent="Witaj, "+aktualnyUzytkownik.imie+"!";
 document.getElementById("opisRoli").textContent={
 dyrektor:"Panel dyrektora szkoły.",
-nauczyciel:"Panel nauczyciela. Twoje przypisane klasy: "+mojeKlasy().join(", "),
+nauczyciel:"Panel nauczyciela. Twoje klasy: "+mojeKlasy().join(", "),
 uczen:"Panel ucznia. Możesz sprawdzić swoje oceny i frekwencję.",
-rodzic:"Panel rodzica. Możesz sprawdzić oceny i frekwencję dziecka."
+rodzic:"Panel rodzica. Możesz sprawdzić dane dziecka."
 }[rola];
-
-ustawMenu();
-odswiez();
-pokaz("pulpit");
+ustawMenu();odswiez();pokaz("pulpit");
 }
 function ustawMenu(){
-const widoczne={
+let widoczne={
 menuUczniowie:rola==="dyrektor",
-menuOceny:rola==="dyrektor"||rola==="nauczyciel"||rola==="uczen"||rola==="rodzic",
-menuFrekwencja:rola==="dyrektor"||rola==="nauczyciel"||rola==="uczen"||rola==="rodzic",
-menuTematy:rola==="dyrektor"||rola==="nauczyciel",
+menuTematy:["dyrektor","nauczyciel"].includes(rola),
 menuNauczyciele:rola==="dyrektor",
-menuSprawdziany:true
+menuUsprawiedliwienia:["dyrektor","rodzic"].includes(rola)
 };
 Object.keys(widoczne).forEach(id=>document.getElementById(id).classList.toggle("hidden",!widoczne[id]));
 document.getElementById("dodawanieUcznia").style.display=rola==="dyrektor"?"block":"none";
@@ -394,6 +430,9 @@ document.getElementById("formularzFrekwencji").style.display=["dyrektor","nauczy
 document.getElementById("formularzTematu").style.display=["dyrektor","nauczyciel"].includes(rola)?"block":"none";
 document.getElementById("formularzOgloszenia").style.display=["dyrektor","nauczyciel"].includes(rola)?"block":"none";
 document.getElementById("formularzSprawdzianu").style.display=["dyrektor","nauczyciel"].includes(rola)?"block":"none";
+document.getElementById("formularzZastepstwa").style.display=rola==="dyrektor"?"block":"none";
+document.getElementById("formularzUsprawiedliwienia").style.display=rola==="rodzic"?"block":"none";
+document.getElementById("formularzPrywatnej").style.display=["rodzic","nauczyciel"].includes(rola)?"block":"none";
 document.getElementById("statystyki").style.display=rola==="dyrektor"?"grid":"none";
 document.getElementById("naglowekPlanu").textContent=rola==="nauczyciel"?"Twój plan lekcji":"Wyświetl plan klasy";
 }
@@ -412,8 +451,7 @@ function dodajUcznia(){
 let imie=document.getElementById("nowyUczen").value.trim();
 if(!imie)return alert("Wpisz imię i nazwisko.");
 uczniowie.push({imie,klasa:document.getElementById("klasa").value});
-document.getElementById("nowyUczen").value="";
-odswiez();
+document.getElementById("nowyUczen").value="";odswiez();
 }
 function usunUcznia(i){
 if(rola!=="dyrektor"||!confirm("Usunąć tego ucznia?"))return;
@@ -425,12 +463,10 @@ let imie=document.getElementById("nowyNauczyciel").value.trim();
 let login=document.getElementById("loginNauczyciela").value.trim();
 let haslo=document.getElementById("hasloNauczyciela").value;
 let wybrane=[...document.getElementById("klasyNauczyciela").selectedOptions].map(o=>o.value);
-if(!imie||!login||!haslo||!wybrane.length)return alert("Uzupełnij pola i wybierz przynajmniej jedną klasę.");
+if(!imie||!login||!haslo||!wybrane.length)return alert("Uzupełnij pola i wybierz klasy.");
 if(login==="dyrektor"||nauczyciele.some(n=>n.login===login)||konta.some(k=>k.login===login))return alert("Ten login jest już zajęty.");
 nauczyciele.push({imie,login,haslo,klasy:wybrane});
-document.getElementById("nowyNauczyciel").value="";
-document.getElementById("loginNauczyciela").value="";
-document.getElementById("hasloNauczyciela").value="";
+["nowyNauczyciel","loginNauczyciela","hasloNauczyciela"].forEach(id=>document.getElementById(id).value="");
 odswiez();alert("Konto nauczyciela zostało utworzone.");
 }
 function usunNauczyciela(i){
@@ -440,17 +476,14 @@ nauczyciele.splice(i,1);odswiez();
 function dodajOcene(){
 if(!["dyrektor","nauczyciel"].includes(rola))return;
 let i=document.getElementById("uczenOcena").value;
-if(i==="")return alert("Brak uczniów w dostępnych klasach.");
-let u=uczniowie[i];
-if(!u)return;
+let u=uczniowie[i];if(!u)return alert("Brak uczniów w dostępnych klasach.");
 oceny.push({uczen:u.imie,przedmiot:document.getElementById("przedmiot").value,ocena:document.getElementById("wartoscOceny").value});
 odswiez();
 }
 function dodajFrekwencje(){
 if(!["dyrektor","nauczyciel"].includes(rola))return;
-let i=document.getElementById("uczenFrekwencja").value;
-if(i==="")return alert("Brak uczniów w dostępnych klasach.");
-let u=uczniowie[i];if(!u)return;
+let u=uczniowie[document.getElementById("uczenFrekwencja").value];
+if(!u)return alert("Brak uczniów w dostępnych klasach.");
 frekwencja.push({uczen:u.imie,status:document.getElementById("status").value,data:new Date().toLocaleDateString("pl-PL")});
 odswiez();
 }
@@ -483,23 +516,22 @@ let html="<table><thead><tr><th>Godzina</th>"+dni.map(d=>"<th>"+d+"</th>").join(
 godziny.forEach(g=>{
 html+="<tr><td>"+g+"</td>";
 dni.forEach(d=>{
-let lekcja=wybrane.find(l=>l.dzien===d&&l.godzina===g);
-html+="<td>"+(lekcja?bezpieczny(lekcja.przedmiot)+"<br><small>"+bezpieczny(lekcja.nauczyciel)+"<br>Klasa: "+bezpieczny(lekcja.klasa)+"<br>Sala: "+bezpieczny(lekcja.sala||"-")+"</small>":"—")+"</td>";
+let l=wybrane.find(x=>x.dzien===d&&x.godzina===g);
+html+="<td>"+(l?bezpieczny(l.przedmiot)+"<br><small>"+bezpieczny(l.nauczyciel)+"<br>Klasa: "+bezpieczny(l.klasa)+"<br>Sala: "+bezpieczny(l.sala||"-")+"</small>":"—")+"</td>";
 });
 html+="</tr>";
 });
-html+="</tbody></table>";
-document.getElementById("tabelaPlanu").innerHTML=html;
+document.getElementById("tabelaPlanu").innerHTML=html+"</tbody></table>";
 }
 function dodajOgloszenie(){
 if(!["dyrektor","nauczyciel"].includes(rola))return;
 let t=document.getElementById("tytulOgloszenia").value.trim();
 let tresc=document.getElementById("trescOgloszenia").value.trim();
-if(!t||!tresc)return alert("Uzupełnij tytuł i treść wiadomości.");
+if(!t||!tresc)return alert("Uzupełnij tytuł i treść.");
 ogloszenia.unshift({tytul:t,tresc,autor:aktualnyUzytkownik.imie,data:new Date().toLocaleDateString("pl-PL")});
 document.getElementById("tytulOgloszenia").value="";
 document.getElementById("trescOgloszenia").value="";
-odswiez();alert("Wiadomość została opublikowana.");
+odswiez();
 }
 function usunOgloszenie(i){
 if(rola!=="dyrektor"||!confirm("Usunąć wiadomość?"))return;
@@ -512,38 +544,131 @@ let temat=document.getElementById("testTemat").value.trim();
 let data=document.getElementById("testData").value;
 if(!temat||!data)return alert("Wpisz temat i datę.");
 if(!mojeKlasy().includes(klasa))return alert("Ta klasa nie jest Ci przypisana.");
-sprawdziany.push({klasa,temat,data,rodzaj:document.getElementById("testRodzaj").value,przedmiot:document.getElementById("testPrzedmiot").value,autor:aktualnyUzytkownik.imie});
+sprawdziany.push({klasa,temat,data,rodzaj:document.getElementById("testRodzaj").value,przedmiot:document.getElementById("testPrzedmiot").value});
 odswiez();document.getElementById("testTemat").value="";
 }
+
+/* ZASTĘPSTWA */
+function dodajZastepstwo(){
+if(rola!=="dyrektor")return;
+let data=document.getElementById("zData").value;
+let klasa=document.getElementById("zKlasa").value;
+let godzina=document.getElementById("zGodzina").value;
+let przedmiot=document.getElementById("zPrzedmiot").value.trim();
+let nieobecny=document.getElementById("zNieobecny").value.trim();
+let zastepca=document.getElementById("zastepujacy").value;
+let sala=document.getElementById("zSala").value.trim();
+if(!data||!przedmiot||!nieobecny||!zastepca)return alert("Uzupełnij wymagane pola.");
+zastepstwa.push({data,klasa,godzina,przedmiot,nieobecny,zastepca,sala});
+["zPrzedmiot","zNieobecny","zSala"].forEach(id=>document.getElementById(id).value="");
+odswiez();alert("Zastępstwo zostało dodane.");
+}
+function usunZastepstwo(i){
+if(rola!=="dyrektor"||!confirm("Usunąć zastępstwo?"))return;
+zastepstwa.splice(i,1);odswiez();
+}
+
+/* USPRAWIEDLIWIENIA */
+function dodajUsprawiedliwienie(){
+if(rola!=="rodzic")return;
+let uczen=aktualnyUzytkownik.uczen;
+let od=document.getElementById("uspOd").value;
+let doD=document.getElementById("uspDo").value;
+let powod=document.getElementById("uspPowod").value.trim();
+if(!od||!doD||!powod)return alert("Uzupełnij wszystkie pola.");
+if(doD<od)return alert("Data końcowa nie może być wcześniejsza niż początkowa.");
+usprawiedliwienia.push({uczen,od,doD,powod,status:"Oczekuje na decyzję"});
+document.getElementById("uspPowod").value="";
+odswiez();alert("Usprawiedliwienie zostało wysłane.");
+}
+function decyzjaUsprawiedliwienia(i,status){
+if(rola!=="dyrektor")return;
+usprawiedliwienia[i].status=status;odswiez();
+}
+
+/* WIADOMOŚCI PRYWATNE */
+function wyslijPrywatna(){
+if(!["rodzic","nauczyciel"].includes(rola))return;
+let odbiorca=document.getElementById("odbiorcaPrywatnej").value;
+let tresc=document.getElementById("trescPrywatnej").value.trim();
+if(!odbiorca||!tresc)return alert("Wybierz odbiorcę i wpisz wiadomość.");
+prywatne.push({
+nadawca:aktualnyUzytkownik.login,
+nadawcaNazwa:aktualnyUzytkownik.imie,
+odbiorca:odbiorca,
+tresc:tresc,
+data:new Date().toLocaleString("pl-PL")
+});
+document.getElementById("trescPrywatnej").value="";
+odswiez();alert("Wiadomość została wysłana.");
+}
+
 function odswiez(){
 zapisz();
-let widoczni=rola==="dyrektor"?uczniowie:rola==="nauczyciel"?uczniowie.filter(u=>mojeKlasy().includes(u.klasa)):uczniowie.filter(u=>u.imie===aktualnyUzytkownik?.uczen);
+let widoczni=rola==="dyrektor"?uczniowie:
+rola==="nauczyciel"?uczniowie.filter(u=>mojeKlasy().includes(u.klasa)):
+uczniowie.filter(u=>u.imie===aktualnyUzytkownik?.uczen);
+
 document.getElementById("listaUczniow").innerHTML=uczniowie.map((u,i)=>"<tr><td>"+bezpieczny(u.imie)+"</td><td>"+bezpieczny(u.klasa)+"</td><td>"+(rola==="dyrektor"?"<button class='danger' onclick='usunUcznia("+i+")'>Usuń</button>":"")+"</td></tr>").join("");
 let opcje=widoczni.map(u=>"<option value='"+uczniowie.indexOf(u)+"'>"+bezpieczny(u.imie)+" ("+bezpieczny(u.klasa)+")</option>").join("");
 document.getElementById("uczenOcena").innerHTML=opcje;
 document.getElementById("uczenFrekwencja").innerHTML=opcje;
+
 let mojeOceny=oceny.filter(o=>jestMoimUczniem(o.uczen));
 document.getElementById("listaOcen").innerHTML=mojeOceny.map(o=>"<tr><td>"+bezpieczny(o.uczen)+"</td><td>"+bezpieczny(o.przedmiot)+"</td><td>"+bezpieczny(o.ocena)+"</td></tr>").join("")||"<tr><td colspan='3'>Brak ocen.</td></tr>";
 let mojaFrekwencja=frekwencja.filter(f=>jestMoimUczniem(f.uczen));
 document.getElementById("listaFrekwencji").innerHTML=mojaFrekwencja.map(f=>"<tr><td>"+bezpieczny(f.uczen)+"</td><td>"+bezpieczny(f.status)+"</td><td>"+bezpieczny(f.data)+"</td></tr>").join("")||"<tr><td colspan='3'>Brak wpisów frekwencji.</td></tr>";
+
 document.getElementById("listaTematow").innerHTML=tematy.filter(t=>rola==="dyrektor"||mojeKlasy().includes(t.klasa)).map(t=>"<tr><td>"+bezpieczny(t.przedmiot)+"</td><td>"+bezpieczny(t.klasa)+"</td><td>"+bezpieczny(t.temat)+"</td><td>"+bezpieczny(t.data)+"</td></tr>").join("");
 document.getElementById("listaNauczycieli").innerHTML=nauczyciele.map((n,i)=>"<tr><td>"+bezpieczny(n.imie)+"</td><td>"+bezpieczny(n.login)+"</td><td>"+bezpieczny((n.klasy||[]).join(", "))+"</td><td><button class='danger' onclick='usunNauczyciela("+i+")'>Usuń</button></td></tr>").join("");
-document.getElementById("listaOgloszen").innerHTML=ogloszenia.map((o,i)=>"<div class='announcement'><h3>"+bezpieczny(o.tytul)+"</h3><p>"+bezpieczny(o.tresc).replace(/\n/g,"<br>")+"</p><p class='small'>Autor: "+bezpieczny(o.autor)+" | Data: "+bezpieczny(o.data)+"</p>"+(rola==="dyrektor"?"<button class='danger' onclick='usunOgloszenie("+i+")'>Usuń wiadomość</button>":"")+"</div>").join("")||"<p>Brak wiadomości.</p>";
+
+document.getElementById("listaOgloszen").innerHTML=ogloszenia.map((o,i)=>"<div class='announcement'><h3>"+bezpieczny(o.tytul)+"</h3><p>"+bezpieczny(o.tresc).replace(/\n/g,"<br>")+"</p><p class='small'>Autor: "+bezpieczny(o.autor)+" | "+bezpieczny(o.data)+"</p>"+(rola==="dyrektor"?"<button class='danger' onclick='usunOgloszenie("+i+")'>Usuń</button>":"")+"</div>").join("")||"<p>Brak wiadomości.</p>";
 document.getElementById("wiadomosciPulpit").innerHTML=ogloszenia.slice(0,3).map(o=>"<div class='announcement'><b>"+bezpieczny(o.tytul)+"</b><p>"+bezpieczny(o.tresc)+"</p><p class='small'>"+bezpieczny(o.data)+"</p></div>").join("")||"<p>Brak nowych wiadomości.</p>";
+
 let opcjeKlas=(rola==="nauczyciel"?mojeKlasy():klasy).map(k=>"<option>"+bezpieczny(k)+"</option>").join("");
-["klasaTemat","planKlasa","wybranaKlasa","testKlasa"].forEach(id=>document.getElementById(id).innerHTML=opcjeKlas);
+["klasaTemat","planKlasa","wybranaKlasa","testKlasa","zKlasa"].forEach(id=>document.getElementById(id).innerHTML=opcjeKlas);
 document.getElementById("planNauczyciel").innerHTML=nauczyciele.map(n=>"<option>"+bezpieczny(n.imie)+"</option>").join("");
-let mojPlan=rola==="nauczyciel"?plan.filter(l=>l.nauczyciel===aktualnyUzytkownik.imie):plan;
+document.getElementById("zastepujacy").innerHTML=nauczyciele.map(n=>"<option>"+bezpieczny(n.imie)+"</option>").join("");
+
 document.getElementById("liczbaUczniow").textContent=uczniowie.length;
 document.getElementById("liczbaNauczycieli").textContent=nauczyciele.length;
 document.getElementById("liczbaOcen").textContent=oceny.length;
 document.getElementById("liczbaLekcji").textContent=plan.length;
-let testyWidoczne=sprawdziany.filter(s=>rola==="dyrektor"||(rola==="nauczyciel"&&mojeKlasy().includes(s.klasa))||(rola==="uczen"||rola==="rodzic")&&uczniowie.some(u=>u.imie===aktualnyUzytkownik.uczen&&u.klasa===s.klasa));
+
+let testyWidoczne=sprawdziany.filter(s=>rola==="dyrektor"||
+(rola==="nauczyciel"&&mojeKlasy().includes(s.klasa))||
+(["uczen","rodzic"].includes(rola)&&uczniowie.some(u=>u.imie===aktualnyUzytkownik.uczen&&u.klasa===s.klasa)));
 testyWidoczne.sort((a,b)=>a.data.localeCompare(b.data));
 document.getElementById("listaSprawdzianow").innerHTML=testyWidoczne.map(s=>"<tr><td>"+bezpieczny(s.data)+"</td><td>"+bezpieczny(s.klasa)+"</td><td>"+bezpieczny(s.rodzaj)+"</td><td>"+bezpieczny(s.przedmiot)+"</td><td>"+bezpieczny(s.temat)+"</td></tr>").join("")||"<tr><td colspan='5'>Brak zaplanowanych sprawdzianów.</td></tr>";
-if(rola==="nauczyciel"){
-document.getElementById("wybranaKlasa").value=mojeKlasy()[0]||"";
-}
+
+/* Lista zastępstw */
+let widoczneZ=zastepstwa.filter(z=>rola==="dyrektor"||
+(rola==="nauczyciel"&&mojeKlasy().includes(z.klasa))||
+(["uczen","rodzic"].includes(rola)&&uczniowie.some(u=>u.imie===aktualnyUzytkownik.uczen&&u.klasa===z.klasa)));
+widoczneZ.sort((a,b)=>a.data.localeCompare(b.data));
+document.getElementById("listaZastepstw").innerHTML=widoczneZ.map(z=>{
+let i=zastepstwa.indexOf(z);
+return "<tr><td>"+bezpieczny(z.data)+"</td><td>"+bezpieczny(z.klasa)+"</td><td>"+bezpieczny(z.godzina)+"</td><td>"+bezpieczny(z.przedmiot)+"</td><td>"+bezpieczny(z.nieobecny)+"</td><td>"+bezpieczny(z.zastepca)+"</td><td>"+bezpieczny(z.sala)+"</td><td>"+(rola==="dyrektor"?"<button class='danger' onclick='usunZastepstwo("+i+")'>Usuń</button>":"")+"</td></tr>";
+}).join("")||"<tr><td colspan='8'>Brak zastępstw.</td></tr>";
+document.getElementById("zastepstwaPulpit").innerHTML=widoczneZ.slice(0,4).map(z=>"<div class='announcement'>"+bezpieczny(z.data)+" | "+bezpieczny(z.klasa)+" | "+bezpieczny(z.godzina)+"<br>"+bezpieczny(z.przedmiot)+" – zastępuje: "+bezpieczny(z.zastepca)+"</div>").join("")||"<p>Brak zastępstw.</p>";
+
+/* Usprawiedliwienia */
+let mojeU=usprawiedliwienia.filter(u=>rola==="dyrektor"||u.uczen===aktualnyUzytkownik?.uczen);
+document.getElementById("listaUsprawiedliwien").innerHTML=mojeU.map(u=>{
+let i=usprawiedliwienia.indexOf(u);
+let akcja=rola==="dyrektor"&&u.status==="Oczekuje na decyzję"?
+"<button class='good' onclick='decyzjaUsprawiedliwienia("+i+",\"Zatwierdzone\")'>Zatwierdź</button><button class='danger' onclick='decyzjaUsprawiedliwienia("+i+",\"Odrzucone\")'>Odrzuć</button>":"—";
+return "<tr><td>"+bezpieczny(u.uczen)+"</td><td>"+bezpieczny(u.od)+"</td><td>"+bezpieczny(u.doD)+"</td><td>"+bezpieczny(u.powod)+"</td><td class='status'>"+bezpieczny(u.status)+"</td><td>"+akcja+"</td></tr>";
+}).join("")||"<tr><td colspan='6'>Brak zgłoszeń.</td></tr>";
+
+/* Odbiorcy i prywatna korespondencja */
+let odbiorcy=rola==="rodzic"?nauczyciele.map(n=>({login:n.login,imie:n.imie})):
+rola==="nauczyciel"?konta.filter(k=>k.rola==="rodzic"||k.rola==="uczen").map(k=>({login:k.login,imie:k.imie})):[];
+document.getElementById("odbiorcaPrywatnej").innerHTML=odbiorcy.map(o=>"<option value='"+bezpieczny(o.login)+"'>"+bezpieczny(o.imie)+"</option>").join("");
+let mojeWiadomosci=prywatne.filter(m=>m.nadawca===aktualnyUzytkownik?.login||m.odbiorca===aktualnyUzytkownik?.login);
+document.getElementById("listaPrywatnych").innerHTML=mojeWiadomosci.map(m=>"<div class='message'><b>"+bezpieczny(m.nadawcaNazwa)+"</b><p>"+bezpieczny(m.tresc).replace(/\n/g,"<br>")+"</p><p class='small'>"+bezpieczny(m.data)+" | "+(m.nadawca===aktualnyUzytkownik.login?"Wysłano":"Otrzymano")+"</p></div>").join("")||"<p>Nie masz jeszcze prywatnych wiadomości.</p>";
+
+if(rola==="nauczyciel")document.getElementById("wybranaKlasa").value=mojeKlasy()[0]||"";
 pokazPlan();
 }
 odswiez();
