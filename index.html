@@ -611,6 +611,18 @@ document.getElementById("trescPrywatnej").value="";
 odswiez();alert("Wiadomość została wysłana.");
 }
 
+function decyzjaUsprawiedliwienia(i,status){
+    if(rola!=="dyrektor")return;
+
+    if(!["Zatwierdzone","Odrzucone"].includes(status))return;
+
+    if(!usprawiedliwienia[i])return;
+
+    usprawiedliwienia[i].status=status;
+
+    zapisz();
+    odswiez();
+}
 function odswiez(){
 zapisz();
 let widoczni=rola==="dyrektor"?uczniowie:
