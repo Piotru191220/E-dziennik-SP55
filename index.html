@@ -390,7 +390,18 @@ main{margin:0;padding:12px}
 </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
+const SUPABASE_URL = "https://dbljeihgfvvmbdorgbyn.supabase.co";
+
+const SUPABASE_KEY = "sb_publishable_yTwO0we9peS3V2T8JG3njQ_NwtAv1Ix";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
 const klasy=["1A","1B","2A","2B","3A","4A","5A","6A","7A","8A"];
 
 function pobierz(k,w){
