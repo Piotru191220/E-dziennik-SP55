@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -7,116 +6,241 @@
 <title>SP55 - E-Dziennik</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f2f5fa;color:#23344d}
-header{background:#142b4a;color:white;padding:22px;text-align:center}
-header h1{margin:0;font-size:24px}
-header p{margin:7px 0 0;color:#d4e2f3}
-main{max-width:950px;margin:35px auto;padding:20px}
-.card{background:white;border-radius:14px;padding:25px;margin-bottom:20px;box-shadow:0 3px 12px #0000000b}
-h2{margin-top:0;color:#173b68}
-input{width:100%;padding:13px;margin:8px 0;border:1px solid #ccd6e2;border-radius:8px}
-button{background:#2864ad;color:white;border:0;padding:12px 20px;border-radius:8px;cursor:pointer;font-weight:bold}
-button:hover{background:#174b89}
-.menu{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
-.menu button{background:#e3edf9;color:#1c4d83}
-.menu button:hover{background:#cbdcf1}
-.hidden{display:none}
-table{width:100%;border-collapse:collapse}
-td,th{padding:12px;border-bottom:1px solid #e5eaf0;text-align:left}
-th{background:#edf3fa}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f4f9;color:#25334a}
+header{background:#17365d;color:white;padding:22px 30px}
+header h1{margin:0;font-size:25px}
+header p{margin:7px 0 0;color:#d7e5f7}
+.login{max-width:400px;margin:70px auto;background:white;padding:30px;border-radius:14px;box-shadow:0 5px 25px #0001}
+input,select,button{padding:11px;border:1px solid #ccd5e0;border-radius:7px;font-size:14px}
+input,select{width:100%;margin:7px 0 14px}
+button{background:#1d5b99;color:white;border:0;cursor:pointer}
+button:hover{background:#124575}
+.layout{display:none;min-height:80vh}
+nav{background:#fff;width:220px;padding:18px;float:left;min-height:85vh}
+nav button{display:block;width:100%;text-align:left;margin:5px 0;background:#f0f4f9;color:#243b55}
+nav button:hover{background:#dce9f7}
+main{padding:25px;margin-left:220px}
+.panel{background:white;padding:22px;border-radius:12px;margin-bottom:18px;box-shadow:0 2px 10px #00000009}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px}
+.stat{background:#eaf2fb;padding:20px;border-radius:10px}
+.stat strong{display:block;font-size:28px;color:#174d80;margin-top:8px}
+table{width:100%;border-collapse:collapse;margin-top:15px}
+th,td{padding:12px;border-bottom:1px solid #e3e8ef;text-align:left}
+th{background:#f1f5fa}
+.section{display:none}
+.section.active{display:block}
+.small{font-size:13px;color:#718096}
+.danger{background:#a83232}
+@media(max-width:650px){
+nav{float:none;width:100%;min-height:auto;display:flex;flex-wrap:wrap}
+nav button{width:auto;flex:1}
+main{margin:0;padding:12px}
+}
 </style>
 </head>
 <body>
+
 <header>
 <h1>SP55 | E-DZIENNIK</h1>
 <p>Szkoła Podstawowa nr 55 im. Marii Skłodowskiej</p>
 </header>
-<main>
-<div class="card" id="login">
-<h2>Logowanie do e-dziennika</h2>
+
+<div id="login" class="login">
+<h2>Logowanie do systemu</h2>
+<p class="small">Panel demonstracyjny szkoły</p>
 <label>Login</label>
-<input id="user" placeholder="Wpisz login">
+<input id="loginName" placeholder="Wpisz login">
 <label>Hasło</label>
-<input id="pass" type="password" placeholder="Wpisz hasło">
-<button onclick="zaloguj()">Zaloguj się</button>
-<p id="blad"></p>
-<p><small>Wersja demonstracyjna. Login: dyrektor | Hasło: SP55demo</small></p>
+<input id="password" type="password" placeholder="Wpisz hasło">
+<button onclick="zaloguj()" style="width:100%">Zaloguj się</button>
+<p class="small">Demo: dyrektor / SP55demo</p>
+<p id="blad" style="color:red"></p>
 </div>
 
-<div id="panel" class="hidden">
-<div class="card">
+<div class="layout" id="layout">
+<nav>
+<button onclick="pokaz('pulpit')">🏠 Pulpit</button>
+<button onclick="pokaz('uczniowie')">👨‍🎓 Uczniowie</button>
+<button onclick="pokaz('oceny')">📝 Oceny</button>
+<button onclick="pokaz('frekwencja')">📅 Frekwencja</button>
+<button onclick="pokaz('tematy')">📚 Tematy lekcji</button>
+<button onclick="wyloguj()" class="danger">Wyloguj</button>
+</nav>
+
+<main>
+<section id="pulpit" class="section active">
+<div class="panel">
 <h2>Panel dyrektora</h2>
-<p>Witamy w e-dzienniku Szkoły Podstawowej nr 55!</p>
-<div class="menu">
-<button onclick="pokaz('start')">Pulpit</button>
-<button onclick="pokaz('uczniowie')">Uczniowie</button>
-<button onclick="pokaz('oceny')">Oceny</button>
-<button onclick="pokaz('frekwencja')">Frekwencja</button>
-<button onclick="pokaz('lekcje')">Tematy lekcji</button>
+<p>Witaj w systemie e-dziennika SP55!</p>
+<p class="small">Wersja demonstracyjna – dane przykładowe.</p>
 </div>
+<div class="cards">
+<div class="stat">Liczba uczniów<strong id="liczbaUczniow">3</strong></div>
+<div class="stat">Wpisane oceny<strong id="liczbaOcen">0</strong></div>
+<div class="stat">Tematy lekcji<strong id="liczbaTematow">0</strong></div>
 </div>
+</section>
 
-<div class="card" id="start">
-<h2>Strona główna</h2>
-<p>Wybierz odpowiednią zakładkę z menu.</p>
-<p>🏫 Szkoła: SP55</p>
-<p>📚 System: E-Dziennik</p>
-</div>
-
-<div class="card hidden" id="uczniowie">
+<section id="uczniowie" class="section">
+<div class="panel">
 <h2>Uczniowie</h2>
+<h3>Dodaj ucznia</h3>
+<input id="nowyUczen" placeholder="Imię i nazwisko">
+<select id="klasa">
+<option>1A</option><option>1B</option><option>2A</option>
+<option>2B</option><option>3A</option><option>4A</option>
+<option>5A</option><option>6A</option><option>7A</option><option>8A</option>
+</select>
+<button onclick="dodajUcznia()">Dodaj ucznia</button>
+<h3>Lista uczniów</h3>
 <table>
-<tr><th>Imię i nazwisko</th><th>Klasa</th></tr>
-<tr><td>Jan Kowalski</td><td>4A</td></tr>
-<tr><td>Anna Nowak</td><td>4A</td></tr>
-<tr><td>Ola Wiśniewska</td><td>5A</td></tr>
+<thead><tr><th>Imię i nazwisko</th><th>Klasa</th><th>Akcja</th></tr></thead>
+<tbody id="listaUczniow"></tbody>
 </table>
 </div>
+</section>
 
-<div class="card hidden" id="oceny">
+<section id="oceny" class="section">
+<div class="panel">
 <h2>Oceny</h2>
+<label>Uczeń</label>
+<select id="uczenOcena"></select>
+<label>Przedmiot</label>
+<select id="przedmiot">
+<option>Język polski</option><option>Matematyka</option>
+<option>Język angielski</option><option>Przyroda</option>
+<option>Historia</option><option>Informatyka</option>
+<option>Plastyka</option><option>Muzyka</option>
+</select>
+<label>Ocena</label>
+<select id="wartoscOceny">
+<option>1</option><option>2</option><option>3</option>
+<option>4</option><option>5</option><option>6</option>
+</select>
+<button onclick="dodajOcene()">Zapisz ocenę</button>
 <table>
-<tr><th>Uczeń</th><th>Przedmiot</th><th>Ocena</th></tr>
-<tr><td>Jan Kowalski</td><td>Matematyka</td><td>5</td></tr>
-<tr><td>Anna Nowak</td><td>Język polski</td><td>4</td></tr>
+<thead><tr><th>Uczeń</th><th>Przedmiot</th><th>Ocena</th></tr></thead>
+<tbody id="listaOcen"></tbody>
 </table>
 </div>
+</section>
 
-<div class="card hidden" id="frekwencja">
+<section id="frekwencja" class="section">
+<div class="panel">
 <h2>Frekwencja</h2>
-<p>Jan Kowalski – obecny</p>
-<p>Anna Nowak – nieobecna</p>
+<label>Uczeń</label>
+<select id="uczenFrekwencja"></select>
+<label>Status obecności</label>
+<select id="status">
+<option>Obecny</option><option>Nieobecny</option><option>Spóźniony</option>
+</select>
+<button onclick="dodajFrekwencje()">Zapisz obecność</button>
+<table>
+<thead><tr><th>Uczeń</th><th>Status</th><th>Data</th></tr></thead>
+<tbody id="listaFrekwencji"></tbody>
+</table>
 </div>
+</section>
 
-<div class="card hidden" id="lekcje">
+<section id="tematy" class="section">
+<div class="panel">
 <h2>Tematy lekcji</h2>
-<p>Matematyka – Dodawanie ułamków.</p>
-<p>Język polski – Opis postaci.</p>
+<label>Przedmiot</label>
+<select id="przedmiotTemat">
+<option>Język polski</option><option>Matematyka</option>
+<option>Język angielski</option><option>Przyroda</option>
+<option>Historia</option><option>Informatyka</option>
+</select>
+<label>Klasa</label>
+<select id="klasaTemat">
+<option>1A</option><option>1B</option><option>2A</option>
+<option>3A</option><option>4A</option><option>5A</option>
+<option>6A</option><option>7A</option><option>8A</option>
+</select>
+<label>Temat lekcji</label>
+<input id="nowyTemat" placeholder="Wpisz temat lekcji">
+<button onclick="dodajTemat()">Zapisz temat</button>
+<table>
+<thead><tr><th>Przedmiot</th><th>Klasa</th><th>Temat</th><th>Data</th></tr></thead>
+<tbody id="listaTematow"></tbody>
+</table>
+</div>
+</section>
+</main>
 </div>
 
-<button onclick="wyloguj()">Wyloguj się</button>
-</div>
-</main>
 <script>
+let uczniowie=[
+{imie:"Jan Kowalski",klasa:"1A"},
+{imie:"Anna Nowak",klasa:"1A"},
+{imie:"Piotr Wiśniewski",klasa:"2A"}
+];
+let oceny=[];
+let frekwencja=[];
+let tematy=[];
+
 function zaloguj(){
-let u=document.getElementById("user").value;
-let p=document.getElementById("pass").value;
-if(u==="dyrektor"&&p==="SP55demo"){
-document.getElementById("login").classList.add("hidden");
-document.getElementById("panel").classList.remove("hidden");
+if(document.getElementById("loginName").value==="dyrektor" &&
+document.getElementById("password").value==="SP55demo"){
+document.getElementById("login").style.display="none";
+document.getElementById("layout").style.display="block";
+odswiez();
 }else{
 document.getElementById("blad").textContent="Nieprawidłowy login lub hasło.";
 }
 }
-function pokaz(id){
-["start","uczniowie","oceny","frekwencja","lekcje"].forEach(x=>{
-document.getElementById(x).classList.add("hidden");
-});
-document.getElementById(id).classList.remove("hidden");
-}
 function wyloguj(){
-document.getElementById("panel").classList.add("hidden");
-document.getElementById("login").classList.remove("hidden");
+document.getElementById("layout").style.display="none";
+document.getElementById("login").style.display="block";
+}
+function pokaz(id){
+document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+}
+function dodajUcznia(){
+let imie=document.getElementById("nowyUczen").value.trim();
+if(!imie)return alert("Wpisz imię i nazwisko ucznia.");
+uczniowie.push({imie,klasa:document.getElementById("klasa").value});
+document.getElementById("nowyUczen").value="";
+odswiez();
+}
+function usunUcznia(i){
+uczniowie.splice(i,1);
+odswiez();
+}
+function dodajOcene(){
+let i=document.getElementById("uczenOcena").value;
+if(i==="")return;
+oceny.push({uczen:uczniowie[i].imie,przedmiot:document.getElementById("przedmiot").value,ocena:document.getElementById("wartoscOceny").value});
+odswiez();
+}
+function dodajFrekwencje(){
+let i=document.getElementById("uczenFrekwencja").value;
+if(i==="")return;
+frekwencja.push({uczen:uczniowie[i].imie,status:document.getElementById("status").value,data:new Date().toLocaleDateString("pl-PL")});
+odswiez();
+}
+function dodajTemat(){
+let temat=document.getElementById("nowyTemat").value.trim();
+if(!temat)return alert("Wpisz temat lekcji.");
+tematy.push({przedmiot:document.getElementById("przedmiotTemat").value,klasa:document.getElementById("klasaTemat").value,temat,data:new Date().toLocaleDateString("pl-PL")});
+document.getElementById("nowyTemat").value="";
+odswiez();
+}
+function odswiez(){
+document.getElementById("listaUczniow").innerHTML=uczniowie.map((u,i)=>`<tr><td>${bezpieczny(u.imie)}</td><td>${u.klasa}</td><td><button class="danger" onclick="usunUcznia(${i})">Usuń</button></td></tr>`).join("");
+let opcje=uczniowie.map((u,i)=>`<option value="${i}">${bezpieczny(u.imie)} (${u.klasa})</option>`).join("");
+document.getElementById("uczenOcena").innerHTML=opcje;
+document.getElementById("uczenFrekwencja").innerHTML=opcje;
+document.getElementById("listaOcen").innerHTML=oceny.map(o=>`<tr><td>${bezpieczny(o.uczen)}</td><td>${o.przedmiot}</td><td>${o.ocena}</td></tr>`).join("");
+document.getElementById("listaFrekwencji").innerHTML=frekwencja.map(f=>`<tr><td>${bezpieczny(f.uczen)}</td><td>${f.status}</td><td>${f.data}</td></tr>`).join("");
+document.getElementById("listaTematow").innerHTML=tematy.map(t=>`<tr><td>${t.przedmiot}</td><td>${t.klasa}</td><td>${bezpieczny(t.temat)}</td><td>${t.data}</td></tr>`).join("");
+document.getElementById("liczbaUczniow").textContent=uczniowie.length;
+document.getElementById("liczbaOcen").textContent=oceny.length;
+document.getElementById("liczbaTematow").textContent=tematy.length;
+}
+function bezpieczny(t){
+return String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
 </script>
 </body>
