@@ -673,7 +673,7 @@ testyWidoczne.sort((a,b)=>a.data.localeCompare(b.data));
 document.getElementById("listaSprawdzianow").innerHTML=testyWidoczne.map(s=>{
 let i=sprawdziany.indexOf(s);
 
-return "<tr><td>"+bezpieczny(s.data)+"</td><td>"+bezpieczny(s.klasa)+"</td><td>"+bezpieczny(s.rodzaj)+"</td><td>"+bezpieczny(s.przedmiot)+"</td><td>"+bezpieczny(s.temat)+"</td><td>"+(rola==="dyrektor"?"<button class='danger' onclick='usunSprawdzian("+i+")'>Usuń</button>":"—")+"</td></tr>";
+return "<tr><td>"+bezpieczny(s.data)+"</td><td>"+bezpieczny(s.klasa)+"</td><td>"+bezpieczny(s.rodzaj)+"</td><td>"+bezpieczny(s.przedmiot)+"</td><td>"+bezpieczny(s.temat)+"</td><td>"+(["dyrektor","nauczyciel"].includes(rola)?"<button class='danger' onclick='usunSprawdzian("+i+")'>Usuń</button>":"—")
 
 }).join("")||"<tr><td colspan='6'>Brak zaplanowanych sprawdzianów.</td></tr>";
 
