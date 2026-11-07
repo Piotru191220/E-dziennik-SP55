@@ -162,7 +162,7 @@ main{margin:0;padding:12px}
 <select id="status"><option>Obecny</option><option>Nieobecny</option><option>Spóźniony</option></select>
 <button onclick="dodajFrekwencje()">Zapisz obecność</button>
 </div>
-<table><thead><tr><th>Uczeń</th><th>Status</th><th>Data</th></tr></thead>
+<table><thead><tr><th>Uczeń</th><th>Status</th><th>Data</th><th>Akcja</th></tr></thead>
 <tbody id="listaFrekwencji"></tbody></table>
 </div>
 </section>
@@ -553,6 +553,19 @@ if(!u)return alert("Brak uczniów w dostępnych klasach.");
 frekwencja.push({uczen:u.imie,status:document.getElementById("status").value,data:new Date().toLocaleDateString("pl-PL")});
 odswiez();
 }
+    function usunFrekwencje(i){
+if(!["dyrektor","nauczyciel"].includes(rola))return;
+if(!frekwencja[i])return;
+
+if(rola==="nauczyciel"&&!jestMoimUczniem(frekwencja[i].uczen))
+return alert("Nie możesz usunąć frekwencji tego ucznia.");
+
+if(!confirm("Czy na pewno usunąć ten wpis frekwencji?"))return;
+
+frekwencja.splice(i,1);
+zapisz();
+odswiez();
+}
 function dodajTemat(){
 if(!["dyrektor","nauczyciel"].includes(rola))return;
 let temat=document.getElementById("nowyTemat").value.trim();
@@ -820,8 +833,19 @@ document.getElementById("uczenFrekwencja").innerHTML=opcje;
 
 let mojeOceny=oceny.filter(o=>jestMoimUczniem(o.uczen));
 document.getElementById("listaOcen").innerHTML=mojeOceny.map(o=>"<tr><td>"+bezpieczny(o.uczen)+"</td><td>"+bezpieczny(o.przedmiot)+"</td><td>"+bezpieczny(o.ocena)+"</td></tr>").join("")||"<tr><td colspan='3'>Brak ocen.</td></tr>";
-let mojaFrekwencja=frekwencja.filter(f=>jestMoimUczniem(f.uczen));
-document.getElementById("listaFrekwencji").innerHTML=mojaFrekwencja.map(f=>"<tr><td>"+bezpieczny(f.uczen)+"</td><td>"+bezpieczny(f.status)+"</td><td>"+bezpieczny(f.data)+"</td></tr>").join("")||"<tr><td colspan='3'>Brak wpisów frekwencji.</td></tr>";
+let mojaFrekwencja=frekwencja
+.map((f,i)=>({...f,indeks:i}))
+.filter(f=>jestMoimUczniem(f.uczen));
+
+document.getElementById("listaFrekwencji").innerHTML=
+mojaFrekwencja.map(f=>
+"<tr><td>"+bezpieczny(f.uczen)+
+"</td><td>"+bezpieczny(f.status)+
+"</td><td>"+bezpieczny(f.data)+
+"</td><td>"+(["dyrektor","nauczyciel"].includes(rola)?
+"<button class='danger' onclick='usunFrekwencje("+f.indeks+")'>Usuń</button>":"—")+
+"</td></tr>"
+).join("")||"<tr><td colspan='4'>Brak wpisów frekwencji.</td></tr>";
 
 document.getElementById("listaTematow").innerHTML=tematy.filter(t=>rola==="dyrektor"||mojeKlasy().includes(t.klasa)).map(t=>"<tr><td>"+bezpieczny(t.przedmiot)+"</td><td>"+bezpieczny(t.klasa)+"</td><td>"+bezpieczny(t.temat)+"</td><td>"+bezpieczny(t.data)+"</td></tr>").join("");
 document.getElementById("listaNauczycieli").innerHTML=nauczyciele.map((n,i)=>"<tr><td>"+bezpieczny(n.imie)+"</td><td>"+bezpieczny(n.login)+"</td><td>"+bezpieczny((n.klasy||[]).join(", "))+"</td><td><button class='danger' onclick='usunNauczyciela("+i+")'>Usuń</button></td></tr>").join("");
