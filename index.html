@@ -478,7 +478,9 @@ async function zaloguj(){
   let blad = document.getElementById("blad");
   blad.textContent = "";
 
-  const email = login + "@sp55demo.invalid";
+const email = login === "dyrektor"
+  ? "dyrektor@sp55.pl"
+  : login + "@sp55demo.invalid";
 
   const { data, error } = await supabaseClient.auth.signInWithPassword({
     email: email,
