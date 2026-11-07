@@ -78,6 +78,8 @@ main{margin:0;padding:12px}
 <button onclick="pokaz('ogloszenia')">📢 Wiadomości szkolne</button>
 <button onclick="pokaz('plan')">🗓️ Plan lekcji</button>
 <button onclick="pokaz('sprawdziany')">📝 Sprawdziany</button>
+<button onclick="pokaz('uwagi')">📌 Uwagi</button>
+<button onclick="pokaz('zadania')">📚 Zadania domowe</button>
 <button id="menuNauczyciele" onclick="pokaz('nauczyciele')">👩‍🏫 Nauczyciele</button>
 <button onclick="pokaz('zastepstwa')">🔄 Zastępstwa</button>
 <button id="menuUsprawiedliwienia" onclick="pokaz('usprawiedliwienia')">📄 Usprawiedliwienia</button>
@@ -330,6 +332,61 @@ main{margin:0;padding:12px}
 </div>
 </section>
 
+    <section id="uwagi" class="section">
+<div class="panel">
+<h2>📌 Uwagi o uczniach</h2>
+
+<div id="formularzUwagi">
+<h3>Dodaj uwagę</h3>
+<label>Uczeń</label>
+<select id="uwagaUczen"></select>
+<label>Treść uwagi</label>
+<textarea id="uwagaTresc" placeholder="Wpisz treść uwagi"></textarea>
+<button onclick="dodajUwage()">Dodaj uwagę</button>
+</div>
+
+<h3>Lista uwag</h3>
+<table>
+<thead><tr><th>Uczeń</th><th>Klasa</th><th>Treść</th><th>Autor</th><th>Data</th></tr></thead>
+<tbody id="listaUwag"></tbody>
+</table>
+</div>
+</section>
+
+<section id="zadania" class="section">
+<div class="panel">
+<h2>📚 Zadania domowe</h2>
+
+<div id="formularzZadania">
+<h3>Dodaj zadanie domowe</h3>
+<label>Klasa</label>
+<select id="zadanieKlasa"></select>
+<label>Przedmiot</label>
+<select id="zadaniePrzedmiot">
+<option>Język polski</option>
+<option>Matematyka</option>
+<option>Język angielski</option>
+<option>Przyroda</option>
+<option>Historia</option>
+<option>Informatyka</option>
+<option>Plastyka</option>
+<option>Muzyka</option>
+</select>
+<label>Treść zadania</label>
+<textarea id="zadanieTresc" placeholder="Opisz zadanie domowe"></textarea>
+<label>Termin wykonania</label>
+<input type="date" id="zadanieTermin">
+<button onclick="dodajZadanie()">Zadaj pracę domową</button>
+</div>
+
+<h3>Lista zadań domowych</h3>
+<table>
+<thead><tr><th>Klasa</th><th>Przedmiot</th><th>Zadanie</th><th>Termin</th><th>Autor</th></tr></thead>
+<tbody id="listaZadan"></tbody>
+</table>
+</div>
+</section>
+
 </main>
 </div>
 
@@ -360,6 +417,8 @@ let konta=pobierz("sp55_konta",[
 let zastepstwa=pobierz("sp55_zastepstwa",[]);
 let usprawiedliwienia=pobierz("sp55_usprawiedliwienia",[]);
 let prywatne=pobierz("sp55_prywatne",[]);
+    let uwagi=pobierz("sp55_uwagi",[]);
+let zadania=pobierz("sp55_zadania",[]);
 let aktualnyUzytkownik=null;
 let rola="";
 
@@ -370,7 +429,9 @@ sp55_oceny:oceny,sp55_frekwencja:frekwencja,
 sp55_tematy:tematy,sp55_plan:plan,sp55_ogloszenia:ogloszenia,
 sp55_sprawdziany:sprawdziany,sp55_konta:konta,
 sp55_zastepstwa:zastepstwa,sp55_usprawiedliwienia:usprawiedliwienia,
-sp55_prywatne:prywatne
+sp55_prywatne:prywatne,
+sp55_uwagi:uwagi,
+sp55_zadania:zadania
 };
 Object.keys(dane).forEach(k=>localStorage.setItem(k,JSON.stringify(dane[k])));
 }
@@ -422,6 +483,11 @@ menuTematy:["dyrektor","nauczyciel"].includes(rola),
 menuNauczyciele:rola==="dyrektor",
 menuUsprawiedliwienia:["dyrektor","rodzic"].includes(rola)
 };
+    document.getElementById("formularzUwagi").style.display=
+["dyrektor","nauczyciel"].includes(rola)?"block":"none";
+
+document.getElementById("formularzZadania").style.display=
+["dyrektor","nauczyciel"].includes(rola)?"block":"none";
 Object.keys(widoczne).forEach(id=>document.getElementById(id).classList.toggle("hidden",!widoczne[id]));
 document.getElementById("dodawanieUcznia").style.display=rola==="dyrektor"?"block":"none";
 document.getElementById("dodawanieLekcji").style.display=rola==="dyrektor"?"block":"none";
@@ -558,7 +624,53 @@ odswiez();document.getElementById("testTemat").value="";
 
     alert("Sprawdzian lub kartkówka zostały usunięte.");
 }
+/* UWAGI */
+function dodajUwage(){
+if(!["dyrektor","nauczyciel"].includes(rola))return;
 
+let indeks=document.getElementById("uwagaUczen").value;
+let uczen=uczniowie[indeks];
+let tresc=document.getElementById("uwagaTresc").value.trim();
+
+if(!uczen)return alert("Wybierz ucznia.");
+if(!tresc)return alert("Wpisz treść uwagi.");
+
+uwagi.push({
+uczen:uczen.imie,
+klasa:uczen.klasa,
+tresc:tresc,
+autor:aktualnyUzytkownik.imie,
+data:new Date().toLocaleDateString("pl-PL")
+});
+
+document.getElementById("uwagaTresc").value="";
+odswiez();
+alert("Uwaga została dodana.");
+}
+
+/* ZADANIA DOMOWE */
+function dodajZadanie(){
+if(!["dyrektor","nauczyciel"].includes(rola))return;
+
+let klasa=document.getElementById("zadanieKlasa").value;
+let tresc=document.getElementById("zadanieTresc").value.trim();
+let termin=document.getElementById("zadanieTermin").value;
+
+if(!klasa||!tresc||!termin)return alert("Uzupełnij wszystkie pola.");
+if(!mojeKlasy().includes(klasa))return alert("Ta klasa nie jest Ci przypisana.");
+
+zadania.push({
+klasa:klasa,
+przedmiot:document.getElementById("zadaniePrzedmiot").value,
+tresc:tresc,
+termin:termin,
+autor:aktualnyUzytkownik.imie
+});
+
+document.getElementById("zadanieTresc").value="";
+odswiez();
+alert("Zadanie domowe zostało dodane.");
+}
 /* ZASTĘPSTWA */
 function dodajZastepstwo(){
 if(rola!=="dyrektor")return;
@@ -705,7 +817,53 @@ let mojeWiadomosci=prywatne.filter(m=>m.nadawca===aktualnyUzytkownik?.login||m.o
 document.getElementById("listaPrywatnych").innerHTML=mojeWiadomosci.map(m=>"<div class='message'><b>"+bezpieczny(m.nadawcaNazwa)+"</b><p>"+bezpieczny(m.tresc).replace(/\n/g,"<br>")+"</p><p class='small'>"+bezpieczny(m.data)+" | "+(m.nadawca===aktualnyUzytkownik.login?"Wysłano":"Otrzymano")+"</p></div>").join("")||"<p>Nie masz jeszcze prywatnych wiadomości.</p>";
 
 if(rola==="nauczyciel")document.getElementById("wybranaKlasa").value=mojeKlasy()[0]||"";
-pokazPlan();
+/* WYŚWIETLANIE UWAG */
+let uwagaOpcje=widoczni.map(u=>
+"<option value='"+uczniowie.indexOf(u)+"'>"+
+bezpieczny(u.imie)+" ("+bezpieczny(u.klasa)+")</option>"
+).join("");
+
+document.getElementById("uwagaUczen").innerHTML=uwagaOpcje;
+
+document.getElementById("listaUwag").innerHTML=
+uwagi.filter(u=>
+rola==="dyrektor"||
+(rola==="nauczyciel"&&mojeKlasy().includes(u.klasa))||
+u.uczen===aktualnyUzytkownik?.uczen
+).map(u=>
+"<tr><td>"+bezpieczny(u.uczen)+
+"</td><td>"+bezpieczny(u.klasa)+
+"</td><td>"+bezpieczny(u.tresc)+
+"</td><td>"+bezpieczny(u.autor)+
+"</td><td>"+bezpieczny(u.data)+"</td></tr>"
+).join("")||"<tr><td colspan='5'>Brak uwag.</td></tr>";
+
+/* WYŚWIETLANIE ZADAŃ DOMOWYCH */
+let klasyZadan=rola==="dyrektor"?klasy:
+rola==="nauczyciel"?mojeKlasy():[];
+
+document.getElementById("zadanieKlasa").innerHTML=
+klasyZadan.map(k=>"<option>"+bezpieczny(k)+"</option>").join("");
+
+let klasaUcznia=uczniowie.find(u=>
+u.imie===aktualnyUzytkownik?.uczen
+)?.klasa;
+
+let widoczneZadania=zadania.filter(z=>
+rola==="dyrektor"||
+(rola==="nauczyciel"&&mojeKlasy().includes(z.klasa))||
+(["uczen","rodzic"].includes(rola)&&z.klasa===klasaUcznia)
+);
+
+document.getElementById("listaZadan").innerHTML=
+widoczneZadania.sort((a,b)=>a.termin.localeCompare(b.termin)).map(z=>
+"<tr><td>"+bezpieczny(z.klasa)+
+"</td><td>"+bezpieczny(z.przedmiot)+
+"</td><td>"+bezpieczny(z.tresc)+
+"</td><td>"+bezpieczny(z.termin)+
+"</td><td>"+bezpieczny(z.autor)+"</td></tr>"
+).join("")||"<tr><td colspan='5'>Brak zadań domowych.</td></tr>";
+    pokazPlan();
 }
 odswiez();
 document.getElementById("uspUczen").value =
