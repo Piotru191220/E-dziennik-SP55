@@ -485,10 +485,11 @@ async function zaloguj(){
     password: haslo
   });
 
-  if(error){
-    blad.textContent = "Nieprawidłowy login lub hasło.";
-    return;
-  }
+if(error){
+  console.error("Błąd logowania Supabase:", error);
+  blad.textContent = error.message;
+  return;
+}
 
   const { data: profil, error: profilError } = await supabaseClient
     .from("profiles")
