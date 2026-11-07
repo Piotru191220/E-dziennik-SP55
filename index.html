@@ -573,22 +573,57 @@ if(plan.some(l=>l.nauczyciel===nauczyciel&&l.dzien===dzien&&l.godzina===godzina)
 plan.push({klasa,dzien,godzina,przedmiot:document.getElementById("planPrzedmiot").value,nauczyciel,sala:document.getElementById("planSala").value.trim()});
 odswiez();
 }
+function usunLekcje(i){
+  if(!["dyrektor","nauczyciel"].includes(rola))return;
+  if(!plan[i])return;
+
+  if(!confirm("Czy na pewno usunąć tę lekcję z planu?"))return;
+
+  plan.splice(i,1);
+  zapisz();
+  odswiez();
+}
+    function pokazPlan(){
+
 function pokazPlan(){
-let pole=document.getElementById("wybranaKlasa");if(!pole)return;
+let pole=document.getElementById("wybranaKlasa");
+if(!pole)return;
+
 let dni=["Poniedziałek","Wtorek","Środa","Czwartek","Piątek"];
 let godziny=["8:00–8:45","8:55–9:40","9:50–10:35","10:45–11:30","11:50–12:35","12:45–13:30","13:40–14:25","14:35–15:20"];
-let wybrane=rola==="nauczyciel"?plan.filter(l=>l.nauczyciel===aktualnyUzytkownik.imie):plan.filter(l=>l.klasa===pole.value);
-let html="<table><thead><tr><th>Godzina</th>"+dni.map(d=>"<th>"+d+"</th>").join("")+"</tr></thead><tbody>";
+
+let wybrane=rola==="nauczyciel"
+?plan.map((l,i)=>({...l,indeks:i})).filter(l=>l.nauczyciel===aktualnyUzytkownik.imie)
+:plan.map((l,i)=>({...l,indeks:i})).filter(l=>l.klasa===pole.value);
+
+let html="<table><thead><tr><th>Godzina</th>"+
+dni.map(d=>"<th>"+d+"</th>").join("")+
+"</tr></thead><tbody>";
+
 godziny.forEach(g=>{
 html+="<tr><td>"+g+"</td>";
+
 dni.forEach(d=>{
 let l=wybrane.find(x=>x.dzien===d&&x.godzina===g);
-html+="<td>"+(l?bezpieczny(l.przedmiot)+"<br><small>"+bezpieczny(l.nauczyciel)+"<br>Klasa: "+bezpieczny(l.klasa)+"<br>Sala: "+bezpieczny(l.sala||"-")+"</small>":"—")+"</td>";
+
+html+="<td>"+(l
+?bezpieczny(l.przedmiot)+
+"<br><small>"+bezpieczny(l.nauczyciel)+
+"<br>Klasa: "+bezpieczny(l.klasa)+
+"<br>Sala: "+bezpieczny(l.sala||"-")+
+"</small>"+
+(["dyrektor","nauczyciel"].includes(rola)
+?"<br><button class='danger' onclick='usunLekcje("+l.indeks+")'>Usuń</button>"
+:"")
+:"—")+"</td>";
 });
+
 html+="</tr>";
 });
+
 document.getElementById("tabelaPlanu").innerHTML=html+"</tbody></table>";
 }
+
 function dodajOgloszenie(){
 if(!["dyrektor","nauczyciel"].includes(rola))return;
 let t=document.getElementById("tytulOgloszenia").value.trim();
