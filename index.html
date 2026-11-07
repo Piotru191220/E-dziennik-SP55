@@ -303,7 +303,7 @@ main{margin:0;padding:12px}
 <h2>📄 Usprawiedliwienia nieobecności</h2>
 <div id="formularzUsprawiedliwienia">
 <h3>Zgłoś usprawiedliwienie</h3>
-<label>Uczeń</label><select id="uspUczen"></select>
+<input id="uspUczen" readonly>
 <label>Data od</label><input type="date" id="uspOd">
 <label>Data do</label><input type="date" id="uspDo">
 <label>Powód</label><textarea id="uspPowod" placeholder="Wpisz powód nieobecności"></textarea>
@@ -571,19 +571,27 @@ zastepstwa.splice(i,1);odswiez();
 /* USPRAWIEDLIWIENIA */
 function dodajUsprawiedliwienie(){
 if(rola!=="rodzic")return;
+
 let uczen=aktualnyUzytkownik.uczen;
 let od=document.getElementById("uspOd").value;
 let doD=document.getElementById("uspDo").value;
 let powod=document.getElementById("uspPowod").value.trim();
+
+if(!uczen)return alert("Do konta nie przypisano ucznia.");
 if(!od||!doD||!powod)return alert("Uzupełnij wszystkie pola.");
-if(doD<od)return alert("Data końcowa nie może być wcześniejsza niż początkowa.");
-usprawiedliwienia.push({uczen,od,doD,powod,status:"Oczekuje na decyzję"});
+if(doD<od)return alert("Data końcowa nie może być wcześniejsza.");
+
+usprawiedliwienia.push({
+uczen:uczen,
+od:od,
+doD:doD,
+powod:powod,
+status:"Oczekuje na decyzję"
+});
+
 document.getElementById("uspPowod").value="";
-odswiez();alert("Usprawiedliwienie zostało wysłane.");
-}
-function decyzjaUsprawiedliwienia(i,status){
-if(rola!=="dyrektor")return;
-usprawiedliwienia[i].status=status;odswiez();
+odswiez();
+alert("Usprawiedliwienie zostało wysłane.");
 }
 
 /* WIADOMOŚCI PRYWATNE */
@@ -672,6 +680,9 @@ if(rola==="nauczyciel")document.getElementById("wybranaKlasa").value=mojeKlasy()
 pokazPlan();
 }
 odswiez();
+document.getElementById("uspUczen").value =
+rola==="rodzic" ? aktualnyUzytkownik.uczen : "";
+  
 </script>
 </body>
 </html>
