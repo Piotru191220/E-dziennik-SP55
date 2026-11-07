@@ -402,6 +402,17 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_KEY
 );
 
+    supabaseClient.from("profiles")
+  .select("id")
+  .limit(1)
+  .then(({ error }) => {
+    if (error) {
+      console.error("Błąd Supabase:", error.message);
+    } else {
+      console.log("Połączenie z Supabase działa!");
+    }
+  });
+
 const klasy=["1A","1B","2A","2B","3A","4A","5A","6A","7A","8A"];
 
 function pobierz(k,w){
