@@ -471,32 +471,74 @@ return u&&mojeKlasy().includes(u.klasa);
 }
 return aktualnyUzytkownik?.uczen===imie;
 }
-function zaloguj(){
-let login=document.getElementById("loginName").value.trim();
-let haslo=document.getElementById("password").value;
-aktualnyUzytkownik=null;
-if(login==="dyrektor"&&haslo==="SP55demo"){
-aktualnyUzytkownik={imie:"Dyrektor",login:"dyrektor"};rola="dyrektor";
-}else{
-let n=nauczyciele.find(x=>x.login===login&&x.haslo===haslo);
-let k=konta.find(x=>x.login===login&&x.haslo===haslo);
-if(n){aktualnyUzytkownik=n;rola="nauczyciel";}
-else if(k){aktualnyUzytkownik=k;rola=k.rola;}
-}
-if(!aktualnyUzytkownik){
-document.getElementById("blad").textContent="Nieprawidłowy login lub hasło.";return;
-}
-document.getElementById("blad").textContent="";
-document.getElementById("login").style.display="none";
-document.getElementById("layout").style.display="block";
-document.getElementById("powitanie").textContent="Witaj, "+aktualnyUzytkownik.imie+"!";
-document.getElementById("opisRoli").textContent={
-dyrektor:"Panel dyrektora szkoły.",
-nauczyciel:"Panel nauczyciela. Twoje klasy: "+mojeKlasy().join(", "),
-uczen:"Panel ucznia. Możesz sprawdzić swoje oceny i frekwencję.",
-rodzic:"Panel rodzica. Możesz sprawdzić dane dziecka."
-}[rola];
-ustawMenu();odswiez();pokaz("pulpit");
+async function zaloguj(){
+  let login = document.getElementById("loginName").value.trim().toLowerCase();
+  let haslo = document.getElementById("password").value;
+
+  let blad = document.getElementById("blad");
+  blad.textContent = "";
+
+  const email = login + "@sp55demo.invalid";
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: email,
+    password: haslo
+  });
+
+  if(error){
+    blad.textContent = "Nieprawidłowy login lub hasło.";
+    return;
+  }
+
+  const { data: profil, error: profilError } = await supabaseClient
+    .from("profiles")
+    .select("id, username, display_name, role")
+    .eq("id", data.user.id)
+    .single();
+
+  if(profilError || !profil){
+    await supabaseClient.auth.signOut();
+    blad.textContent = "Nie znaleziono profilu użytkownika.";
+    return;
+  }
+
+  const roleMap = {
+    director: "dyrektor",
+    teacher: "nauczyciel",
+    student: "uczen",
+    parent: "rodzic"
+  };
+
+  rola = roleMap[profil.role];
+
+  if(!rola){
+    await supabaseClient.auth.signOut();
+    blad.textContent = "Nieprawidłowa rola użytkownika.";
+    return;
+  }
+
+  aktualnyUzytkownik = {
+    id: profil.id,
+    imie: profil.display_name,
+    login: profil.username
+  };
+
+  document.getElementById("login").style.display = "none";
+  document.getElementById("layout").style.display = "block";
+
+  document.getElementById("powitanie").textContent =
+    "Witaj, " + aktualnyUzytkownik.imie + "!";
+
+  document.getElementById("opisRoli").textContent = {
+    dyrektor: "Panel dyrektora szkoły.",
+    nauczyciel: "Panel nauczyciela.",
+    uczen: "Panel ucznia. Możesz sprawdzić swoje oceny i frekwencję.",
+    rodzic: "Panel rodzica. Możesz sprawdzić dane dziecka."
+  }[rola];
+
+  ustawMenu();
+  odswiez();
+  pokaz("pulpit");
 }
 function ustawMenu(){
 let widoczne={
