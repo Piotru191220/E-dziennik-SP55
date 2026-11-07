@@ -670,7 +670,12 @@ let testyWidoczne=sprawdziany.filter(s=>rola==="dyrektor"||
 (rola==="nauczyciel"&&mojeKlasy().includes(s.klasa))||
 (["uczen","rodzic"].includes(rola)&&uczniowie.some(u=>u.imie===aktualnyUzytkownik.uczen&&u.klasa===s.klasa)));
 testyWidoczne.sort((a,b)=>a.data.localeCompare(b.data));
-document.getElementById("listaSprawdzianow").innerHTML=testyWidoczne.map(s=>"<tr><td>"+bezpieczny(s.data)+"</td><td>"+bezpieczny(s.klasa)+"</td><td>"+bezpieczny(s.rodzaj)+"</td><td>"+bezpieczny(s.przedmiot)+"</td><td>"+bezpieczny(s.temat)+"</td></tr>").join("")||"<tr><td colspan='5'>Brak zaplanowanych sprawdzianów.</td></tr>";
+document.getElementById("listaSprawdzianow").innerHTML=testyWidoczne.map(s=>{
+let i=sprawdziany.indexOf(s);
+
+return "<tr><td>"+bezpieczny(s.data)+"</td><td>"+bezpieczny(s.klasa)+"</td><td>"+bezpieczny(s.rodzaj)+"</td><td>"+bezpieczny(s.przedmiot)+"</td><td>"+bezpieczny(s.temat)+"</td><td>"+(rola==="dyrektor"?"<button class='danger' onclick='usunSprawdzian("+i+")'>Usuń</button>":"—")+"</td></tr>";
+
+}).join("")||"<tr><td colspan='6'>Brak zaplanowanych sprawdzianów.</td></tr>";
 
 /* Lista zastępstw */
 let widoczneZ=zastepstwa.filter(z=>rola==="dyrektor"||
