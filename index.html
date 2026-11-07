@@ -61,11 +61,32 @@ th{background:#f1f5fa}
 <button onclick="pokaz('oceny')">📝 Oceny</button>
 <button onclick="pokaz('frekwencja')">📅 Frekwencja</button>
 <button onclick="pokaz('tematy')">📚 Tematy lekcji</button>
+<button onclick="pokaz('ogloszenia')">📢 Ogłoszenia</button>
 <button onclick="pokaz('plan')">🗓️ Plan lekcji</button>
 <button id="menuNauczyciele" onclick="pokaz('nauczyciele')">👩‍🏫 Nauczyciele</button>
 <button onclick="wyloguj()" class="danger">Wyloguj</button>
 </nav>
 
+<section id="ogloszenia" class="section">
+<div class="panel">
+<h2>📢 Ogłoszenia szkolne</h2>
+
+<h3>Dodaj ogłoszenie</h3>
+
+<label>Tytuł ogłoszenia</label>
+<input id="tytulOgloszenia" placeholder="Np. Zebranie z rodzicami">
+
+<label>Treść ogłoszenia</label>
+<textarea id="trescOgloszenia" placeholder="Wpisz treść ogłoszenia..." style="width:100%;min-height:120px;padding:12px;border:1px solid #ccd5e0;border-radius:7px"></textarea>
+
+<br><br>
+<button onclick="dodajOgloszenie()">Opublikuj ogłoszenie</button>
+
+<h3>Aktualne ogłoszenia</h3>
+<div id="listaOgloszen"></div>
+</div>
+</section>
+  
 <main>
 <section id="pulpit" class="section active">
 <div class="panel">
@@ -217,6 +238,32 @@ let oceny=JSON.parse(localStorage.getItem("sp55_oceny"))||[];
 let frekwencja=JSON.parse(localStorage.getItem("sp55_frekwencja"))||[];
 let tematy=JSON.parse(localStorage.getItem("sp55_tematy"))||[];
 let plan=JSON.parse(localStorage.getItem("sp55_plan"))||[];
+  let ogloszenia=JSON.parse(localStorage.getItem("sp55_ogloszenia"))||[];
+
+function dodajOgloszenie(){
+let t=document.getElementById("tytulOgloszenia").value.trim();
+let tresc=document.getElementById("trescOgloszenia").value.trim();
+
+if(!t||!tresc)return alert("Uzupełnij tytuł i treść.");
+
+ogloszenia.unshift({
+tytul:t,
+tresc:tresc,
+autor:aktualnyUzytkownik.imie,
+data:new Date().toLocaleDateString("pl-PL")
+});
+
+document.getElementById("tytulOgloszenia").value="";
+document.getElementById("trescOgloszenia").value="";
+
+odswiez();
+}
+
+function usunOgloszenie(i){
+if(!confirm("Czy usunąć ogłoszenie?"))return;
+ogloszenia.splice(i,1);
+odswiez();
+}
 let aktualnyUzytkownik=null;
 let rola="";
 
@@ -227,6 +274,7 @@ localStorage.setItem("sp55_oceny",JSON.stringify(oceny));
 localStorage.setItem("sp55_frekwencja",JSON.stringify(frekwencja));
 localStorage.setItem("sp55_tematy",JSON.stringify(tematy));
 localStorage.setItem("sp55_plan",JSON.stringify(plan));
+localStorage.setItem("sp55_ogloszenia",JSON.stringify(ogloszenia));
 }
 function bezpieczny(t){
 return String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -358,6 +406,15 @@ document.getElementById("liczbaOcen").textContent=oceny.length;
 document.getElementById("liczbaLekcji").textContent=plan.length;
 pokazPlan();
 }
+
+document.getElementById("listaOgloszen").innerHTML=ogloszenia.map((o,i)=>`
+<div class="panel">
+<h3>${bezpieczny(o.tytul)}</h3>
+<p>${bezpieczny(o.tresc).replace(/\n/g,"<br>")}</p>
+<p class="small">Autor: ${bezpieczny(o.autor)} | Data: ${o.data}</p>
+${rola==="dyrektor"?"<button class='danger' onclick='usunOgloszenie("+i+")'>Usuń ogłoszenie</button>":""}
+</div>
+`).join("")||"<p>Brak ogłoszeń szkolnych.</p>";
 </script>
 </body>
 </html>
