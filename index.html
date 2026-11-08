@@ -610,6 +610,10 @@ async function utworzKonto(){
   const login=document.getElementById("kontoLogin").value.trim().toLowerCase();
   const haslo=document.getElementById("kontoHaslo").value;
   const kontoRola=document.getElementById("kontoRola").value;
+    const klasy = document.getElementById("kontoKlasy").value
+  .split(",")
+  .map(k => k.trim())
+  .filter(k => k.length > 0);
   const komunikat=document.getElementById("kontoKomunikat");
 
   komunikat.style.color="red";
@@ -639,6 +643,7 @@ async function utworzKonto(){
         display_name:imie,
         password:haslo,
         role:kontoRola
+          class_names: kontoRola === "teacher" ? klasy : []
       }
     }
   );
